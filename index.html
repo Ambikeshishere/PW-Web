@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PW Target Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  padding:30px;
+  background:#020617;
+  font-family:Inter,system-ui;
+  color:white;
+}
+h1{
+  font-size:32px;
+  background:linear-gradient(90deg,#fb923c,#38bdf8);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.sub{color:#94a3b8;margin-bottom:20px}
+
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+  margin-bottom:25px;
+}
+.card{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 0 25px rgba(56,189,248,.15);
+}
+.big{font-size:28px;font-weight:700}
+.label{color:#94a3b8}
+
+.grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>PW Target vs Achievement</h1>
+<div class="sub">Live from Google Sheets</div>
+
+<div class="kpis">
+  <div class="card"><div class="label">Grand Target</div><div class="big" id="tTarget">0</div></div>
+  <div class="card"><div class="label">Achieved</div><div class="big" id="tAch">0</div></div>
+  <div class="card"><div class="label">Achievement %</div><div class="big" id="tPct">0%</div></div>
+  <div class="card"><div class="label">Delta</div><div class="big" id="tDelta">0</div></div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>Center wise Target vs Achieved</h3>
+    <canvas id="bar"></canvas>
+  </div>
+  <div class="card">
+    <h3>Target vs Achieved</h3>
+    <canvas id="pie"></canvas>
+  </div>
+</div>
+
+<script>
+const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
+
+Papa.parse(csvURL,{
+  download:true,
+  complete:(res)=>{
+    const rows=res.data;
+
+    // --- Grand Total Row = Row 29 -> index 28 ---
+    const GT = rows[28];
+
+    const TT = +GT[1];   // B29
+    const TA = +GT[2];   // C29
+    const TP = GT[3];    // D29
+    const TD = +GT[4];   // E29
+
+    document.getElementById("tTarget").innerText = TT;
+    document.getElementById("tAch").innerText = TA;
+    document.getElementById("tPct").innerText = TP;
+    document.getElementById("tDelta").innerText = TD;
+
+    // --- Center rows A3:A28 ---
+    let centers=[], target=[], achieved=[];
+
+    for(let i=2;i<=27;i++){
+      const r = rows[i];
+      if(!r || !r[0]) continue;
+
+      centers.push(r[0]);
+      target.push(+r[1]);
+      achieved.push(+r[2]);
+    }
+
+    // Bar Chart
+    new Chart(bar,{
+      type:"bar",
+      data:{
+        labels:centers,
+        datasets:[
+          {label:"Target",data:target,backgroundColor:"#fb923c"},
+          {label:"Achieved",data:achieved,backgroundColor:"#38bdf8"}
+        ]
+      },
+      options:{
+        responsive:true,
+        plugins:{legend:{labels:{color:"white"}}},
+        scales:{x:{ticks:{color:"#94a3b8"}},y:{ticks:{color:"#94a3b8"}}}
+      }
+    });
+
+    // Pie Chart
+    new Chart(pie,{
+      type:"pie",
+      data:{
+        labels:["Target","Achieved"],
+        datasets:[{
+          data:[TT,TA],
+          backgroundColor:["#fb923c","#38bdf8"]
+        }]
+      },
+      options:{plugins:{legend:{labels:{color:"white"}}}}
+    });
+  }
+});
+
+setInterval(()=>location.reload(),30000);
+</script>
+
+</body>
+</html>
