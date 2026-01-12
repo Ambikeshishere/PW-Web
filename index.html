@@ -51,24 +51,63 @@ h1{
 .card .label {
   display:block;
   text-align:center;
-  margin-bottom:5px;
+  margin-bottom:8px;
+  font-size: 11px;
 }
 .card .big {
   text-align:center;
-  font-size:22px;
+  font-size:26px;
   font-weight:700;
   margin-top:0px;
 }
 
-/* Card uniform height */
-.kpis .card, .center-kpis .card { min-height:100px; }
+/* Card uniform height - SAME SIZE */
+.kpis .card { 
+  min-height:110px; 
+  max-height:110px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.center-kpis .card { 
+  min-height:90px;
+  max-height:90px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
 .grid > .card { min-height:360px; }
 .chart-container { flex:1; min-height:250px; }
+
+/* Bar chart scrolling container */
+.bar-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  padding-bottom: 10px;
+}
+.bar-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+.bar-scroll-container::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 4px;
+}
+.bar-scroll-container::-webkit-scrollbar-thumb {
+  background: #38bdf8;
+  border-radius: 4px;
+}
+.bar-inner {
+  min-width: 1000px;
+  height: 1100px;
+  position: relative;
+}
 
 .label{color:#94a3b8; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;}
 .grid{display:grid; grid-template-columns:1fr; gap:20px;}
 @media (min-width:1024px){.grid{grid-template-columns:2fr 1fr;}}
-.chart-container{position:relative;height:300px;width:100%;}
 h3{font-size:16px;margin-top:0;color:#f8fafc;}
 select{
   width:100%; padding:8px; border-radius:8px; background:#020617; color:white; border:1px solid #1e293b; margin-bottom:10px;
@@ -98,8 +137,10 @@ th, td{padding:6px; border-bottom:1px solid #334155;}
 <div class="grid">
   <div class="card">
     <h3>Center wise Target vs Achieved</h3>
-    <div class="chart-container">
+    <div class="bar-scroll-container">
+      <div class="bar-inner">
         <canvas id="bar"></canvas>
+      </div>
     </div>
   </div>
   <div class="card">
@@ -198,12 +239,22 @@ function updateDashboard() {
         centersData.push({name: r[0], target: +r[1]||0, achieved: +r[2]||0, pct, delta});
       }
 
-      const fontSize = Math.max(10, Math.min(14, window.innerWidth/50));
-
-      // Horizontal bar chart with split names and highlight
+      // Clean center labels - split into 3 lines
       const barLabels = centers.map(c=>{
-        const parts = c.split(" "); const mid=Math.ceil(parts.length/2);
-        return parts.slice(0,mid).join(" ") + "\n" + parts.slice(mid).join(" ");
+        const cleaned = c.trim().replace(/\s+/g, ' ');
+        const words = cleaned.split(" ");
+        
+        if(words.length <= 3) return words;
+        
+        const third = Math.ceil(words.length / 3);
+        const lines = [];
+        for(let i = 0; i < 3; i++) {
+          const start = i * third;
+          const end = Math.min((i + 1) * third, words.length);
+          const line = words.slice(start, end).join(" ");
+          if(line) lines.push(line);
+        }
+        return lines;
       });
 
       const barColorsTarget = centers.map(c=> c===selectedCenter ? "#facc15" : "#fb923c");
@@ -222,8 +273,8 @@ function updateDashboard() {
           data:{
             labels: barLabels,
             datasets:[
-              {label:"Target", data: target, backgroundColor: barColorsTarget, barThickness:20},
-              {label:"Achieved", data: achieved, backgroundColor: barColorsAch, barThickness:20}
+              {label:"Target", data: target, backgroundColor: barColorsTarget, barThickness:16, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9},
+              {label:"Achieved", data: achieved, backgroundColor: barColorsAch, barThickness:16, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9}
             ]
           },
           options:{
@@ -231,13 +282,41 @@ function updateDashboard() {
             maintainAspectRatio:false,
             responsive:true,
             plugins:{
-              legend:{labels:{color:"white", boxWidth:12}},
-              datalabels:{color:"white", anchor:"end", align:"right", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}
+              legend:{
+                position: 'top',
+                labels:{
+                  color:"white", 
+                  boxWidth:20, 
+                  font:{size:16, weight:'bold'},
+                  padding:15
+                }
+              },
+              datalabels:{
+                color:"white", 
+                anchor:"end", 
+                align:"end",
+                offset: 4,
+                formatter: val=>val.toLocaleString(), 
+                font:{weight:"bold", size:12}
+              }
             },
-            layout:{padding:{left:20,right:20}},
+            layout:{padding:{left:15, right:80, top:20, bottom:20}},
             scales:{
-              x:{ticks:{color:"#94a3b8"}},
-              y:{ticks:{color:"#94a3b8", autoSkip:false, font:{size:12}}}
+              x:{
+                ticks:{color:"#94a3b8", font:{size:13}},
+                grid:{color:"#1e293b"}
+              },
+              y:{
+                ticks:{
+                  color:"#e2e8f0", 
+                  autoSkip:false, 
+                  font:{size:11, weight:'500'}, 
+                  padding:15,
+                  maxRotation: 0,
+                  minRotation: 0
+                },
+                grid:{display:false}
+              }
             }
           },
           plugins:[ChartDataLabels]
@@ -294,7 +373,7 @@ function updateDashboard() {
 // Center mini-dashboard
 document.getElementById("centerSelect").addEventListener("change", function(){
   const cName = this.value;
-  selectedCenter = cName; // highlight selected center
+  selectedCenter = cName;
   const cData = centersData.find(c=>c.name===cName);
   if(!cData) return;
 
@@ -319,7 +398,6 @@ document.getElementById("centerSelect").addEventListener("change", function(){
     });
   }
 
-  // Refresh bar chart to highlight selected center
   updateDashboard();
 });
 
