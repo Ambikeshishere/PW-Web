@@ -2,46 +2,69 @@
 <html>
 <head>
 <title>PW Target Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
 body{
   margin:0;
-  padding:30px;
+  padding:15px; /* Mobile ke liye padding kam ki */
   background:#020617;
   font-family:Inter,system-ui;
   color:white;
 }
 h1{
-  font-size:32px;
+  font-size:24px; /* Mobile par heading choti */
   background:linear-gradient(90deg,#fb923c,#38bdf8);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  margin-bottom: 5px;
 }
-.sub{color:#94a3b8;margin-bottom:20px}
+.sub{color:#94a3b8;margin-bottom:20px; font-size: 14px;}
 
 .kpis{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
-  margin-bottom:25px;
+  grid-template-columns: repeat(2, 1fr); /* Mobile par 2 columns */
+  gap:12px;
+  margin-bottom:20px;
 }
+
+/* Desktop ke liye vapas 4 columns */
+@media (min-width: 768px) {
+  .kpis { grid-template-columns: repeat(4, 1fr); }
+  h1 { font-size: 32px; }
+  body { padding: 30px; }
+}
+
 .card{
   background:#020617;
   border:1px solid #1e293b;
   border-radius:16px;
-  padding:20px;
-  box-shadow:0 0 25px rgba(56,189,248,.15);
+  padding:15px;
+  box-shadow:0 0 25px rgba(56,189,248,.1);
 }
-.big{font-size:28px;font-weight:700}
-.label{color:#94a3b8}
+.big{font-size:22px;font-weight:700; margin-top:5px;}
+.label{color:#94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;}
 
 .grid{
   display:grid;
-  grid-template-columns:2fr 1fr;
+  grid-template-columns: 1fr; /* Mobile par ek ke niche ek */
   gap:20px;
 }
+
+/* Desktop par side-by-side */
+@media (min-width: 1024px) {
+  .grid { grid-template-columns: 2fr 1fr; }
+}
+
+/* Charts container to ensure aspect ratio */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+h3 { font-size: 16px; margin-top: 0; color: #f8fafc; }
 </style>
 </head>
 
@@ -60,11 +83,15 @@ h1{
 <div class="grid">
   <div class="card">
     <h3>Center wise Target vs Achieved</h3>
-    <canvas id="bar"></canvas>
+    <div class="chart-container">
+        <canvas id="bar"></canvas>
+    </div>
   </div>
   <div class="card">
     <h3>Target vs Achieved</h3>
-    <canvas id="pie"></canvas>
+    <div class="chart-container">
+        <canvas id="pie"></canvas>
+    </div>
   </div>
 </div>
 
@@ -75,34 +102,24 @@ Papa.parse(csvURL,{
   download:true,
   complete:(res)=>{
     const rows=res.data;
-
-    // --- Grand Total Row = Row 29 -> index 28 ---
     const GT = rows[28];
 
-    const TT = +GT[1];   // B29
-    const TA = +GT[2];   // C29
-    const TP = GT[3];    // D29
-    const TD = +GT[4];   // E29
+    document.getElementById("tTarget").innerText = (+GT[1]).toLocaleString();
+    document.getElementById("tAch").innerText = (+GT[2]).toLocaleString();
+    document.getElementById("tPct").innerText = GT[3];
+    document.getElementById("tDelta").innerText = (+GT[4]).toLocaleString();
 
-    document.getElementById("tTarget").innerText = TT;
-    document.getElementById("tAch").innerText = TA;
-    document.getElementById("tPct").innerText = TP;
-    document.getElementById("tDelta").innerText = TD;
-
-    // --- Center rows A3:A28 ---
     let centers=[], target=[], achieved=[];
-
     for(let i=2;i<=27;i++){
       const r = rows[i];
       if(!r || !r[0]) continue;
-
       centers.push(r[0]);
       target.push(+r[1]);
       achieved.push(+r[2]);
     }
 
     // Bar Chart
-    new Chart(bar,{
+    new Chart(document.getElementById("bar"),{
       type:"bar",
       data:{
         labels:centers,
@@ -112,28 +129,36 @@ Papa.parse(csvURL,{
         ]
       },
       options:{
+        maintainAspectRatio: false,
         responsive:true,
-        plugins:{legend:{labels:{color:"white"}}},
-        scales:{x:{ticks:{color:"#94a3b8"}},y:{ticks:{color:"#94a3b8"}}}
+        plugins:{legend:{labels:{color:"white", boxWidth: 12}}},
+        scales:{
+            x:{ticks:{color:"#94a3b8", font: { size: 10 }}},
+            y:{ticks:{color:"#94a3b8"}}
+        }
       }
     });
 
     // Pie Chart
-    new Chart(pie,{
+    new Chart(document.getElementById("pie"),{
       type:"pie",
       data:{
         labels:["Target","Achieved"],
         datasets:[{
-          data:[TT,TA],
+          data:[+GT[1],+GT[2]],
           backgroundColor:["#fb923c","#38bdf8"]
         }]
       },
-      options:{plugins:{legend:{labels:{color:"white"}}}}
+      options:{
+        maintainAspectRatio: false,
+        plugins:{legend:{position: 'bottom', labels:{color:"white"}}}
+      }
     });
   }
 });
 
-setInterval(()=>location.reload(),30000);
+// Auto refresh every 60 seconds (30s might be too fast for some mobile connections)
+setInterval(()=>location.reload(),60000);
 </script>
 
 </body>
