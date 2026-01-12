@@ -1,46 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>PW Target Dashboard</title>
+<title>PW Target vs Achievement</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  padding:30px;
+  padding:16px;
   background:#020617;
   font-family:Inter,system-ui;
   color:white;
 }
 h1{
-  font-size:32px;
+  font-size:26px;
   background:linear-gradient(90deg,#fb923c,#38bdf8);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-.sub{color:#94a3b8;margin-bottom:20px}
+.sub{color:#94a3b8;margin-bottom:16px}
 
 .kpis{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:20px;
-  margin-bottom:25px;
+  gap:12px;
+  margin-bottom:18px;
 }
 .card{
   background:#020617;
   border:1px solid #1e293b;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 0 25px rgba(56,189,248,.15);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 0 15px rgba(56,189,248,.15);
 }
-.big{font-size:28px;font-weight:700}
-.label{color:#94a3b8}
+.big{font-size:22px;font-weight:700}
+.label{color:#94a3b8;font-size:13px}
 
 .grid{
   display:grid;
   grid-template-columns:2fr 1fr;
-  gap:20px;
+  gap:16px;
+}
+
+@media(max-width:768px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .grid{grid-template-columns:1fr}
+  canvas{max-height:280px}
 }
 </style>
 </head>
@@ -51,15 +60,15 @@ h1{
 <div class="sub">Live from Google Sheets</div>
 
 <div class="kpis">
-  <div class="card"><div class="label">Grand Target</div><div class="big" id="tTarget">0</div></div>
-  <div class="card"><div class="label">Achieved</div><div class="big" id="tAch">0</div></div>
+  <div class="card"><div class="label">Total Target</div><div class="big" id="tTarget">0</div></div>
+  <div class="card"><div class="label">Total Achieved</div><div class="big" id="tAch">0</div></div>
   <div class="card"><div class="label">Achievement %</div><div class="big" id="tPct">0%</div></div>
   <div class="card"><div class="label">Delta</div><div class="big" id="tDelta">0</div></div>
 </div>
 
 <div class="grid">
   <div class="card">
-    <h3>Center wise Target vs Achieved</h3>
+    <h3>Center Wise Performance</h3>
     <canvas id="bar"></canvas>
   </div>
   <div class="card">
@@ -69,63 +78,60 @@ h1{
 </div>
 
 <script>
-const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
+const csvURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
 
 Papa.parse(csvURL,{
   download:true,
   complete:(res)=>{
     const rows=res.data;
 
-    // --- Grand Total Row = Row 29 -> index 28 ---
-    const GT = rows[28];
+    let centers=[],targets=[],ach=[],deltas=[];
+    let TT=0,TA=0;
 
-    const TT = +GT[1];   // B29
-    const TA = +GT[2];   // C29
-    const TP = GT[3];    // D29
-    const TD = +GT[4];   // E29
+    rows.forEach(r=>{
+      const name=r[1];
+      const t=parseFloat(r[2]);
+      const a=parseFloat(r[3]);
 
-    document.getElementById("tTarget").innerText = TT;
-    document.getElementById("tAch").innerText = TA;
-    document.getElementById("tPct").innerText = TP;
-    document.getElementById("tDelta").innerText = TD;
+      if(!name || name=="Grand Total" || isNaN(t)) return;
 
-    // --- Center rows A3:A28 ---
-    let centers=[], target=[], achieved=[];
+      centers.push(name);
+      targets.push(t);
+      ach.push(a);
+      deltas.push(t-a);
 
-    for(let i=2;i<=27;i++){
-      const r = rows[i];
-      if(!r || !r[0]) continue;
+      TT+=t;
+      TA+=a;
+    });
 
-      centers.push(r[0]);
-      target.push(+r[1]);
-      achieved.push(+r[2]);
-    }
+    document.getElementById("tTarget").innerText = TT.toLocaleString();
+    document.getElementById("tAch").innerText = TA.toLocaleString();
+    document.getElementById("tDelta").innerText = (TT-TA).toLocaleString();
+    document.getElementById("tPct").innerText = Math.round(TA/TT*100)+"%";
 
-    // Bar Chart
     new Chart(bar,{
       type:"bar",
       data:{
         labels:centers,
         datasets:[
-          {label:"Target",data:target,backgroundColor:"#fb923c"},
-          {label:"Achieved",data:achieved,backgroundColor:"#38bdf8"}
+          {label:"Target",data:targets,backgroundColor:"#fb923c"},
+          {label:"Achieved",data:ach,backgroundColor:"#38bdf8"}
         ]
       },
       options:{
         responsive:true,
         plugins:{legend:{labels:{color:"white"}}},
-        scales:{x:{ticks:{color:"#94a3b8"}},y:{ticks:{color:"#94a3b8"}}}
+        scales:{x:{ticks:{color:"white"}},y:{ticks:{color:"white"}}}
       }
     });
 
-    // Pie Chart
     new Chart(pie,{
-      type:"pie",
+      type:"doughnut",
       data:{
-        labels:["Target","Achieved"],
+        labels:["Achieved","Remaining"],
         datasets:[{
-          data:[TT,TA],
-          backgroundColor:["#fb923c","#38bdf8"]
+          data:[TA,TT-TA],
+          backgroundColor:["#38bdf8","#fb923c"]
         }]
       },
       options:{plugins:{legend:{labels:{color:"white"}}}}
@@ -133,7 +139,7 @@ Papa.parse(csvURL,{
   }
 });
 
-setInterval(()=>location.reload(),30000);
+setInterval(()=>location.reload(),60000);
 </script>
 
 </body>
