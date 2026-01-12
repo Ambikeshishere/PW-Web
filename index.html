@@ -44,7 +44,7 @@ h1{
   box-shadow:0 0 25px rgba(56,189,248,.1);
 }
 
-/* Fix for KPI alignment */
+/* KPI card alignment */
 .card .label {
   display: block;
   text-align: center; 
@@ -228,39 +228,40 @@ function updateDashboard() {
 
       const fontSize = Math.max(10, Math.min(14, window.innerWidth/50));
 
-      // Bar chart
+      // Horizontal bar chart
       if(barChart){
-        barChart.data.labels = centers;
+        barChart.data.labels = centers.map(c => c.includes(" ") ? c.split(" ").join("\n") : c);
         barChart.data.datasets[0].data = target;
         barChart.data.datasets[1].data = achieved;
-        barChart.options.scales.x.ticks.font.size = fontSize;
         barChart.update();
       } else {
         barChart = new Chart(document.getElementById("bar"),{
           type:"bar",
-          data:{ labels: centers, datasets:[
-            {label:"Target", data: target, backgroundColor:"#fb923c"},
-            {label:"Achieved", data: achieved, backgroundColor:"#38bdf8"}
-          ]},
+          data:{
+            labels: centers.map(c => c.includes(" ") ? c.split(" ").join("\n") : c),
+            datasets:[
+              {label:"Target", data: target, backgroundColor:"#fb923c"},
+              {label:"Achieved", data: achieved, backgroundColor:"#38bdf8"}
+            ]
+          },
           options:{
+            indexAxis: 'y',
             maintainAspectRatio:false,
             responsive:true,
             plugins:{
               legend:{labels:{color:"white", boxWidth:12}},
-              datalabels:{color:"white", anchor:"end", align:"top", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}
+              datalabels:{color:"white", anchor:"end", align:"right", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}
             },
             scales:{
-              x:{
-                ticks:{color:"#94a3b8", font:{size:fontSize}, maxRotation:90, minRotation:90} // vertical labels
-              },
-              y:{ticks:{color:"#94a3b8"}}
+              x:{ticks:{color:"#94a3b8"}},
+              y:{ticks:{color:"#94a3b8", autoSkip:false, font:{size:12}}}
             }
           },
           plugins:[ChartDataLabels]
         });
       }
 
-      // Overall pie chart (Achieved vs Remaining)
+      // Overall pie chart
       if(pieChart){
         pieChart.data.datasets[0].data = [totalAchieved, totalRemaining];
         pieChart.data.labels = ["Achieved","Remaining"];
@@ -274,7 +275,7 @@ function updateDashboard() {
         });
       }
 
-      // Populate dropdown inside mini-dashboard
+      // Dropdown
       const select = document.getElementById("centerSelect");
       select.innerHTML = '<option value="">-- Select a Center --</option>';
       centersData.forEach(c => {
@@ -284,7 +285,7 @@ function updateDashboard() {
         select.appendChild(opt);
       });
 
-      // Top Centers table
+      // Top centers
       const topCenters = [...centersData].sort((a,b)=>parseFloat(b.pct)-parseFloat(a.pct)).slice(0,5);
       const topTbody = document.querySelector("#topCenters tbody");
       topTbody.innerHTML = "";
@@ -294,7 +295,7 @@ function updateDashboard() {
         topTbody.appendChild(tr);
       });
 
-      // Centers with 0 Achievement
+      // Zero achievement
       const zeroCenters = centersData.filter(c=>c.achieved===0);
       const zeroTbody = document.querySelector("#zeroCenters tbody");
       zeroTbody.innerHTML = "";
@@ -307,7 +308,7 @@ function updateDashboard() {
   });
 }
 
-// Center-specific dashboard
+// Center-specific mini-dashboard
 document.getElementById("centerSelect").addEventListener("change", function(){
   const cName = this.value;
   const cData = centersData.find(c=>c.name===cName);
