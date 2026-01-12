@@ -16,26 +16,23 @@ body{
   color:white;
 }
 h1{
-  font-size:24px;
+  font-size:26px;
   background:linear-gradient(90deg,#fb923c,#38bdf8);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   margin-bottom:5px;
 }
-.sub{color:#94a3b8;margin-bottom:20px; font-size: 14px;}
+.sub{color:#94a3b8;margin-bottom:20px;font-size:14px;}
 
-/* KPI cards */
+/* KPI Cards */
 .kpis{
   display:grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:repeat(2,1fr);
   gap:12px;
   margin-bottom:20px;
 }
-@media (min-width: 768px) {
-  .kpis { grid-template-columns: repeat(4, 1fr); }
-  h1 { font-size: 32px; }
-  body { padding: 30px; }
-}
+@media(min-width:768px){.kpis{grid-template-columns:repeat(4,1fr)} h1{font-size:32px} body{padding:30px}}
+
 .card{
   background:#020617;
   border:1px solid #1e293b;
@@ -45,125 +42,37 @@ h1{
   display:flex;
   flex-direction:column;
   justify-content:center;
-}
-
-/* KPI card alignment */
-.card .label {
-  display:block;
-  text-align:center;
-  margin-bottom:8px;
-  font-size: 11px;
-}
-.card .big {
-  text-align:center;
-  font-size:26px;
-  font-weight:700;
-  margin-top:0px;
-}
-
-/* Card uniform height - SAME SIZE */
-.kpis .card { 
-  min-height:110px; 
-  max-height:110px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
   align-items:center;
-}
-.center-kpis .card { 
-  min-height:90px;
-  max-height:90px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
-.grid > .card { min-height:360px; }
-.chart-container { flex:1; min-height:250px; }
-
-/* Bar chart scrolling container */
-.bar-scroll-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-  width: 100%;
-  padding-bottom: 10px;
-  -webkit-overflow-scrolling: touch;
-}
-.bar-scroll-container::-webkit-scrollbar {
-  height: 8px;
-}
-.bar-scroll-container::-webkit-scrollbar-track {
-  background: #1e293b;
-  border-radius: 4px;
-}
-.bar-scroll-container::-webkit-scrollbar-thumb {
-  background: #38bdf8;
-  border-radius: 4px;
-}
-.bar-inner {
-  min-width: 1000px;
-  height: 1100px;
-  position: relative;
+  min-height:100%;
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .bar-inner {
-    min-width: 800px;
-    height: 900px;
-  }
-  h3 {
-    font-size: 14px;
-  }
-  .card {
-    padding: 12px;
-  }
-}
+.card .label{display:block;text-align:center;margin-bottom:6px;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px}
+.card .big{font-size:26px;font-weight:700;text-align:center;margin-top:0}
 
-@media (max-width: 480px) {
-  .bar-inner {
-    min-width: 700px;
-    height: 800px;
-  }
-  .kpis {
-    gap: 8px;
-  }
-  .kpis .card {
-    min-height: 95px;
-    max-height: 95px;
-  }
-  .card .big {
-    font-size: 22px;
-  }
-  .card .label {
-    font-size: 10px;
-  }
-}
+.kpis .card{min-height:110px;max-height:110px}
+.center-kpis .card{min-height:90px;max-height:90px}
+.grid>.card{min-height:360px}
 
-.label{color:#94a3b8; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;}
-.grid{display:grid; grid-template-columns:1fr; gap:20px;}
-@media (min-width:1024px){.grid{grid-template-columns:2fr 1fr;}}
-h3{font-size:16px;margin-top:0;color:#f8fafc;}
-select{
-  width:100%; padding:8px; border-radius:8px; background:#020617; color:white; border:1px solid #1e293b; margin-bottom:10px;
-}
-.center-kpis{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
-.center-kpis .card{padding:10px;}
-@media (max-width:600px){.center-kpis{grid-template-columns:1fr;}}
-table{width:100%; border-collapse:collapse; color:white; font-size: 13px;}
-th, td{padding:8px 6px; border-bottom:1px solid #334155; text-align: left;}
-th{font-weight: 600; color: #94a3b8;}
+/* Charts */
+.chart-container{flex:1;min-height:250px;width:100%}
+.bar-scroll-container{overflow-x:auto;overflow-y:hidden;width:100%;padding-bottom:10px;-webkit-overflow-scrolling:touch}
+.bar-scroll-container::-webkit-scrollbar{height:8px}
+.bar-scroll-container::-webkit-scrollbar-track{background:#1e293b;border-radius:4px}
+.bar-scroll-container::-webkit-scrollbar-thumb{background:#38bdf8;border-radius:4px}
+.bar-inner{min-width:1000px;height:1100px;position:relative}
 
-@media (max-width: 768px) {
-  table{font-size: 12px;}
-  th, td{padding:6px 4px;}
-}
+/* Tables */
+table{width:100%;border-collapse:collapse;color:white;font-size:13px}
+th,td{padding:8px 6px;border-bottom:1px solid #334155;text-align:left}
+th{font-weight:600;color:#94a3b8}
 
-@media (max-width: 480px) {
-  table{font-size: 11px;}
-  th, td{padding:5px 3px;}
-  .grid{gap: 15px;}
-}
+/* Center mini-dashboard */
+.center-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.center-kpis .card{padding:10px}
+
+/* Responsive adjustments */
+@media(max-width:768px){.bar-inner{min-width:800px;height:900px} h3{font-size:14px} .card{padding:12px} .grid>.card{min-height:340px} table{font-size:12px} th,td{padding:6px 4px}}
+@media(max-width:480px){.bar-inner{min-width:700px;height:800px} .kpis{gap:8px} .kpis .card{min-height:95px;max-height:95px} .card .big{font-size:22px} .card .label{font-size:10px} .grid{gap:15px} table{font-size:11px} th,td{padding:5px 3px}}
 </style>
 </head>
 
@@ -180,7 +89,7 @@ th{font-weight: 600; color: #94a3b8;}
   <div class="card"><div class="label">Delta</div><div class="big" id="tDelta">0</div></div>
 </div>
 
-<!-- Main Charts -->
+<!-- Charts -->
 <div class="grid">
   <div class="card">
     <h3>Center wise Target vs Achieved</h3>
@@ -192,276 +101,93 @@ th{font-weight: 600; color: #94a3b8;}
   </div>
   <div class="card">
     <h3>Achieved vs Remaining (Overall)</h3>
-    <div class="chart-container">
-        <canvas id="pie"></canvas>
-    </div>
+    <div class="chart-container"><canvas id="pie"></canvas></div>
   </div>
 </div>
 
-<!-- Center mini-dashboard -->
-<div class="grid" style="margin-top:20px;">
-  <div class="card" style="grid-column:1 / -1;">
+<!-- Mini Dashboard -->
+<div class="grid" style="margin-top:20px">
+  <div class="card" style="grid-column:1/-1">
     <h3 id="centerPieTitle">Center Achieved vs Remaining</h3>
-    <select id="centerSelect">
-      <option value="">-- Select a Center --</option>
-    </select>
+    <select id="centerSelect"><option value="">-- Select a Center --</option></select>
     <div class="center-kpis">
       <div class="card"><div class="label">Target</div><div class="big" id="cTarget">0</div></div>
       <div class="card"><div class="label">Achieved</div><div class="big" id="cAch">0</div></div>
       <div class="card"><div class="label">Achievement %</div><div class="big" id="cPct">0%</div></div>
       <div class="card"><div class="label">Delta</div><div class="big" id="cDelta">0</div></div>
     </div>
-    <div class="chart-container" style="margin-top:15px;">
-      <canvas id="centerPie"></canvas>
-    </div>
+    <div class="chart-container" style="margin-top:15px"><canvas id="centerPie"></canvas></div>
   </div>
 </div>
 
-<!-- Top Centers & Zero Achievement -->
-<div class="grid" style="margin-top:20px; gap:20px;">
+<!-- Tables -->
+<div class="grid" style="margin-top:20px;gap:20px">
   <div class="card">
     <h3>Top Centers (by Achievement %)</h3>
-    <table id="topCenters">
-      <thead>
-        <tr>
-          <th>Center</th>
-          <th>Achievement %</th>
-          <th>Target</th>
-          <th>Achieved</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <table id="topCenters"><thead><tr><th>Center</th><th>Achievement %</th><th>Target</th><th>Achieved</th></tr></thead><tbody></tbody></table>
   </div>
-
   <div class="card">
     <h3>Centers with 0 Achievement</h3>
-    <table id="zeroCenters">
-      <thead>
-        <tr>
-          <th>Center</th>
-          <th>Target</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <table id="zeroCenters"><thead><tr><th>Center</th><th>Target</th></tr></thead><tbody></tbody></table>
   </div>
 </div>
 
 <script>
-const csvURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
+const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
+let barChart,pieChart,centerPieChart; let centersData=[]; let selectedCenter="";
 
-let barChart, pieChart, centerPieChart;
-let centersData = [];
-let selectedCenter = "";
+function updateDashboard(){
+  Papa.parse(csvURL,{download:true,complete:(res)=>{
+    const rows=res.data.filter(r=>r.length); if(rows.length<2) return;
+    const GT=rows[rows.length-1]; const totalTarget=+GT[1]||0; const totalAchieved=+GT[2]||0; const totalRemaining=totalTarget-totalAchieved;
+    document.getElementById("tTarget").innerText=totalTarget.toLocaleString();
+    document.getElementById("tAch").innerText=totalAchieved.toLocaleString();
+    document.getElementById("tPct").innerText=GT[3]||"0%";
+    document.getElementById("tDelta").innerText=(+GT[4]||0).toLocaleString();
 
-function updateDashboard() {
-  Papa.parse(csvURL, {
-    download: true,
-    error: (err) => { console.error("CSV load failed:", err); },
-    complete: (res) => {
-      const rows = res.data.filter(r => r.length);
-      if(rows.length < 2) return;
+    centersData=[]; const centers=[],target=[],achieved=[];
+    for(let i=1;i<rows.length-1;i++){const r=rows[i];if(!r||!r[0]) continue;centers.push(r[0]);target.push(+r[1]||0);achieved.push(+r[2]||0);const delta=(+r[1]||0)-(+r[2]||0);const pct=((+r[2]||0)/(+r[1]||1)*100).toFixed(1)+"%";centersData.push({name:r[0],target:+r[1]||0,achieved:+r[2]||0,pct,delta});}
 
-      const GT = rows[rows.length - 1];
-      const totalTarget = +GT[1] || 0;
-      const totalAchieved = +GT[2] || 0;
-      const totalRemaining = totalTarget - totalAchieved;
+    const barLabels=centers.map(c=>{const w=c.trim().split(" ");const mid=Math.ceil(w.length/2);return w.slice(0,mid).join(" ")+"\n"+w.slice(mid).join(" ");});
+    const barColorsTarget=centers.map(c=>c===selectedCenter?"#facc15":"#fb923c");
+    const barColorsAch=centers.map(c=>c===selectedCenter?"#22d3ee":"#38bdf8");
 
-      document.getElementById("tTarget").innerText = totalTarget.toLocaleString();
-      document.getElementById("tAch").innerText = totalAchieved.toLocaleString();
-      document.getElementById("tPct").innerText = GT[3] || "0%";
-      document.getElementById("tDelta").innerText = (+GT[4] || 0).toLocaleString();
+    if(barChart){barChart.data.labels=barLabels;barChart.data.datasets[0].data=target;barChart.data.datasets[0].backgroundColor=barColorsTarget;barChart.data.datasets[1].data=achieved;barChart.data.datasets[1].backgroundColor=barColorsAch;barChart.update();} 
+    else{barChart=new Chart(document.getElementById("bar"),{type:"bar",data:{labels:barLabels,datasets:[{label:"Target",data:target,backgroundColor:barColorsTarget,barThickness:16,borderRadius:4,categoryPercentage:0.7,barPercentage:0.9},{label:"Achieved",data:achieved,backgroundColor:barColorsAch,barThickness:16,borderRadius:4,categoryPercentage:0.7,barPercentage:0.9}]},options:{indexAxis:'y',maintainAspectRatio:false,responsive:true,plugins:{legend:{position:'top',labels:{color:"white",boxWidth:20,padding:15,font:{size:16,weight:'bold'}}},datalabels:{color:"white",anchor:"end",align:"end",offset:4,formatter:val=>val.toLocaleString(),font:{weight:"bold",size:12}}},layout:{padding:{left:15,right:80,top:20,bottom:20}},scales:{x:{ticks:{color:"#94a3b8",font:{size:13}},grid:{color:"#1e293b"}},y:{ticks:{color:"#e2e8f0",autoSkip:false,font:{size:11,weight:'500'},padding:15,maxRotation:0,minRotation:0},grid:{display:false}}}},plugins:[ChartDataLabels]});}
 
-      centersData = [];
-      const centers=[], target=[], achieved=[];
-      for(let i=1; i<rows.length - 1; i++){
-        const r = rows[i];
-        if(!r || !r[0]) continue;
-        centers.push(r[0]);
-        target.push(+r[1] || 0);
-        achieved.push(+r[2] || 0);
-        const delta = (+r[1] || 0) - (+r[2] || 0);
-        const pct = ((+r[2]||0)/(+r[1]||1)*100).toFixed(1)+"%";
-        centersData.push({name: r[0], target: +r[1]||0, achieved: +r[2]||0, pct, delta});
-      }
+    if(pieChart){pieChart.data.datasets[0].data=[totalAchieved,totalRemaining];pieChart.data.labels=["Achieved","Remaining"];pieChart.update();}
+    else{pieChart=new Chart(document.getElementById("pie"),{type:"pie",data:{labels:["Achieved","Remaining"],datasets:[{data:[totalAchieved,totalRemaining],backgroundColor:["#38bdf8","#fb923c"]}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:"white"}},datalabels:{color:"white",formatter:val=>val.toLocaleString(),font:{weight:"bold"}}}},plugins:[ChartDataLabels]});}
 
-      // Clean center labels - split into 3 lines
-      const barLabels = centers.map(c=>{
-        const cleaned = c.trim().replace(/\s+/g, ' ');
-        const words = cleaned.split(" ");
-        
-        // Mobile responsive font size
-        const isMobile = window.innerWidth <= 768;
-        
-        if(words.length <= 3) return words;
-        
-        const third = Math.ceil(words.length / 3);
-        const lines = [];
-        for(let i = 0; i < 3; i++) {
-          const start = i * third;
-          const end = Math.min((i + 1) * third, words.length);
-          const line = words.slice(start, end).join(" ");
-          if(line) lines.push(line);
-        }
-        return lines;
-      });
+    const select=document.getElementById("centerSelect"); select.innerHTML='<option value="">-- Select a Center --</option>';
+    centersData.forEach(c=>{const opt=document.createElement("option");opt.value=c.name;opt.innerText=c.name;select.appendChild(opt);});
 
-      // Responsive settings
-      const isMobile = window.innerWidth <= 768;
-      const barThickness = isMobile ? 14 : 16;
-      const fontSize = isMobile ? 10 : 11;
-      const dataLabelSize = isMobile ? 10 : 12;
-      const legendSize = isMobile ? 13 : 16;
+    const topCenters=[...centersData].sort((a,b)=>parseFloat(b.pct)-parseFloat(a.pct)).slice(0,5);
+    const topTbody=document.querySelector("#topCenters tbody");topTbody.innerHTML="";
+    topCenters.forEach(c=>{const tr=document.createElement("tr");tr.innerHTML=`<td>${c.name}</td><td>${c.pct}</td><td>${c.target.toLocaleString()}</td><td>${c.achieved.toLocaleString()}</td>`;topTbody.appendChild(tr);});
 
-      const barColorsTarget = centers.map(c=> c===selectedCenter ? "#facc15" : "#fb923c");
-      const barColorsAch = centers.map(c=> c===selectedCenter ? "#22d3ee" : "#38bdf8");
-
-      if(barChart){
-        barChart.data.labels = barLabels;
-        barChart.data.datasets[0].data = target;
-        barChart.data.datasets[0].backgroundColor = barColorsTarget;
-        barChart.data.datasets[1].data = achieved;
-        barChart.data.datasets[1].backgroundColor = barColorsAch;
-        barChart.update();
-      } else {
-        barChart = new Chart(document.getElementById("bar"),{
-          type:"bar",
-          data:{
-            labels: barLabels,
-            datasets:[
-              {label:"Target", data: target, backgroundColor: barColorsTarget, barThickness: barThickness, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9},
-              {label:"Achieved", data: achieved, backgroundColor: barColorsAch, barThickness: barThickness, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9}
-            ]
-          },
-          options:{
-            indexAxis: 'y',
-            maintainAspectRatio:false,
-            responsive:true,
-            plugins:{
-              legend:{
-                position: 'top',
-                labels:{
-                  color:"white", 
-                  boxWidth:20, 
-                  font:{size: legendSize, weight:'bold'},
-                  padding:15
-                }
-              },
-              datalabels:{
-                color:"white", 
-                anchor:"end", 
-                align:"end",
-                offset: 4,
-                formatter: val=>val.toLocaleString(), 
-                font:{weight:"bold", size: dataLabelSize}
-              }
-            },
-            layout:{padding:{left:15, right:80, top:20, bottom:20}},
-            scales:{
-              x:{
-                ticks:{color:"#94a3b8", font:{size:13}},
-                grid:{color:"#1e293b"}
-              },
-              y:{
-                ticks:{
-                  color:"#e2e8f0", 
-                  autoSkip:false, 
-                  font:{size: fontSize, weight:'500'}, 
-                  padding:15,
-                  maxRotation: 0,
-                  minRotation: 0
-                },
-                grid:{display:false}
-              }
-            }
-          },
-          plugins:[ChartDataLabels]
-        });
-      }
-
-      // Overall pie chart
-      if(pieChart){
-        pieChart.data.datasets[0].data = [totalAchieved, totalRemaining];
-        pieChart.data.labels = ["Achieved","Remaining"];
-        pieChart.update();
-      } else {
-        pieChart = new Chart(document.getElementById("pie"),{
-          type:"pie",
-          data:{labels:["Achieved","Remaining"], datasets:[{data:[totalAchieved,totalRemaining], backgroundColor:["#38bdf8","#fb923c"]}]},
-          options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{color:"white"}}, datalabels:{color:"white", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}}},
-          plugins:[ChartDataLabels]
-        });
-      }
-
-      // Dropdown
-      const select = document.getElementById("centerSelect");
-      select.innerHTML = '<option value="">-- Select a Center --</option>';
-      centersData.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.name;
-        opt.innerText = c.name;
-        select.appendChild(opt);
-      });
-
-      // Top centers
-      const topCenters = [...centersData].sort((a,b)=>parseFloat(b.pct)-parseFloat(a.pct)).slice(0,5);
-      const topTbody = document.querySelector("#topCenters tbody");
-      topTbody.innerHTML = "";
-      topCenters.forEach(c=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${c.name}</td><td>${c.pct}</td><td>${c.target.toLocaleString()}</td><td>${c.achieved.toLocaleString()}</td>`;
-        topTbody.appendChild(tr);
-      });
-
-      // Zero achievement
-      const zeroCenters = centersData.filter(c=>c.achieved===0);
-      const zeroTbody = document.querySelector("#zeroCenters tbody");
-      zeroTbody.innerHTML = "";
-      zeroCenters.forEach(c=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${c.name}</td><td>${c.target.toLocaleString()}</td>`;
-        zeroTbody.appendChild(tr);
-      });
-    }
-  });
+    const zeroCenters=centersData.filter(c=>c.achieved===0); const zeroTbody=document.querySelector("#zeroCenters tbody"); zeroTbody.innerHTML="";
+    zeroCenters.forEach(c=>{const tr=document.createElement("tr");tr.innerHTML=`<td>${c.name}</td><td>${c.target.toLocaleString()}</td>`;zeroTbody.appendChild(tr);});
+  }});
 }
 
-// Center mini-dashboard
-document.getElementById("centerSelect").addEventListener("change", function(){
-  const cName = this.value;
-  selectedCenter = cName;
-  const cData = centersData.find(c=>c.name===cName);
-  if(!cData) return;
+document.getElementById("centerSelect").addEventListener("change",function(){
+  selectedCenter=this.value;
+  const cData=centersData.find(c=>c.name===this.value); if(!cData) return;
+  const remaining=cData.target-cData.achieved;
+  document.getElementById("centerPieTitle").innerText=`${cData.name} Achieved vs Remaining`;
+  document.getElementById("cTarget").innerText=cData.target.toLocaleString();
+  document.getElementById("cAch").innerText=cData.achieved.toLocaleString();
+  document.getElementById("cPct").innerText=cData.pct;
+  document.getElementById("cDelta").innerText=cData.delta.toLocaleString();
 
-  const remaining = cData.target - cData.achieved;
-
-  document.getElementById("centerPieTitle").innerText = `${cName} Achieved vs Remaining`;
-  document.getElementById("cTarget").innerText = cData.target.toLocaleString();
-  document.getElementById("cAch").innerText = cData.achieved.toLocaleString();
-  document.getElementById("cPct").innerText = cData.pct;
-  document.getElementById("cDelta").innerText = cData.delta.toLocaleString();
-
-  if(centerPieChart){
-    centerPieChart.data.datasets[0].data = [cData.achieved, remaining];
-    centerPieChart.data.labels = ["Achieved","Remaining"];
-    centerPieChart.update();
-  } else {
-    centerPieChart = new Chart(document.getElementById("centerPie"),{
-      type:"pie",
-      data:{labels:["Achieved","Remaining"], datasets:[{data:[cData.achieved, remaining], backgroundColor:["#38bdf8","#fb923c"]}]},
-      options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{color:"white"}}, datalabels:{color:"white", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}}},
-      plugins:[ChartDataLabels]
-    });
-  }
+  if(centerPieChart){centerPieChart.data.datasets[0].data=[cData.achieved,remaining];centerPieChart.data.labels=["Achieved","Remaining"];centerPieChart.update();}
+  else{centerPieChart=new Chart(document.getElementById("centerPie"),{type:"pie",data:{labels:["Achieved","Remaining"],datasets:[{data:[cData.achieved,remaining],backgroundColor:["#38bdf8","#fb923c"]}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:"white"}},datalabels:{color:"white",formatter:val=>val.toLocaleString(),font:{weight:"bold"}}}},plugins:[ChartDataLabels]});}
 
   updateDashboard();
 });
 
-// Initial load
 updateDashboard();
 setInterval(updateDashboard,60000);
 </script>
-
 </body>
 </html>
