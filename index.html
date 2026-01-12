@@ -15,575 +15,241 @@
 
 <style>
     :root {
-        --bg-dark: #0f172a;
+        --bg-dark: #020617;
         --card-bg: rgba(30, 41, 59, 0.6);
         --card-border: rgba(148, 163, 184, 0.1);
-        --accent-primary: #38bdf8; /* Sky Blue */
-        --accent-secondary: #f472b6; /* Pink */
+        --accent-primary: #38bdf8;
         --success: #4ade80;
         --text-main: #f1f5f9;
         --text-muted: #94a3b8;
     }
 
     * { box-sizing: border-box; }
-
     body {
-        margin: 0;
-        padding: 0;
-        background-color: #020617;
-        background-image: 
-            radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-            radial-gradient(at 100% 0%, rgba(244, 114, 182, 0.15) 0px, transparent 50%);
+        margin: 0; padding: 0;
+        background-color: var(--bg-dark);
+        background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%);
         font-family: 'Outfit', sans-serif;
         color: var(--text-main);
         padding-bottom: 40px;
     }
 
-    /* Header */
-    header {
-        padding: 20px 20px 10px;
-        text-align: center;
-    }
-
+    header { padding: 20px; text-align: center; }
     h1 {
-        font-size: 24px;
-        font-weight: 700;
-        margin: 0;
-        background: linear-gradient(to right, #38bdf8, #818cf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.5px;
+        font-size: 26px; font-weight: 700; margin: 0;
+        background: linear-gradient(90deg, #fb923c, #38bdf8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    .sub-header {
-        font-size: 13px;
-        color: var(--text-muted);
-        margin-top: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-    }
+    .container { padding: 15px; max-width: 1200px; margin: 0 auto; }
+    .grid { display: grid; gap: 15px; }
+    @media(min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-4 { grid-template-columns: repeat(4, 1fr); } }
 
-    .live-dot {
-        height: 8px; width: 8px;
-        background-color: var(--success);
-        border-radius: 50%;
-        box-shadow: 0 0 8px var(--success);
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.5; }
-        100% { opacity: 1; }
-    }
-
-    /* Layout Containers */
-    .container {
-        padding: 15px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .grid {
-        display: grid;
-        gap: 15px;
-    }
-    
-    @media(min-width: 768px) {
-        .grid-2 { grid-template-columns: 1fr 1fr; }
-        .grid-4 { grid-template-columns: repeat(4, 1fr); }
-    }
-
-    /* Cards */
     .card {
         background: var(--card-bg);
         border: 1px solid var(--card-border);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 16px;
-        padding: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 16px; padding: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
+    .card h3 { margin: 0 0 15px 0; font-size: 16px; border-left: 3px solid var(--accent-primary); padding-left: 10px; }
 
-    .card h3 {
-        margin: 0 0 15px 0;
-        font-size: 16px;
-        font-weight: 600;
-        color: white;
-        border-left: 3px solid var(--accent-primary);
-        padding-left: 10px;
-    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+    .kpi-card { background: rgba(15, 23, 42, 0.6); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid var(--card-border); }
+    .kpi-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .kpi-value { font-size: 18px; font-weight: 700; }
 
-    /* KPI Cards */
-    .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .kpi-card {
-        background: rgba(15, 23, 42, 0.6);
-        border-radius: 12px;
-        padding: 12px;
-        text-align: center;
-        border: 1px solid var(--card-border);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .kpi-label {
-        font-size: 11px;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .kpi-value {
-        font-size: 20px;
-        font-weight: 700;
-        color: white;
-    }
-
-    /* Specific Colors for KPIs */
-    .kpi-card.highlight .kpi-value { color: var(--accent-primary); }
-    .kpi-card.success .kpi-value { color: var(--success); }
-
-    /* Dropdown */
     select {
-        width: 100%;
-        padding: 12px;
-        border-radius: 10px;
-        background: #1e293b;
-        color: white;
-        border: 1px solid #334155;
-        font-family: 'Outfit', sans-serif;
-        font-size: 14px;
-        outline: none;
-        margin-bottom: 15px;
-        appearance: none;
-        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-        background-repeat: no-repeat;
-        background-position: right 15px top 50%;
-        background-size: 10px auto;
+        width: 100%; padding: 12px; border-radius: 10px; background: #1e293b; color: white;
+        border: 1px solid #334155; margin-bottom: 15px; font-family: inherit;
     }
 
-    /* Charts */
-    .chart-wrapper-scroll {
-        width: 100%;
-        overflow-y: auto;
-        max-height: 450px;
-        scrollbar-width: thin;
-        scrollbar-color: #334155 transparent;
-    }
-    
-    .chart-inner-tall {
-        position: relative;
-        min-height: 800px; /* Ensures bars aren't squished */
-        width: 100%;
-    }
+    .chart-wrapper-scroll { width: 100%; overflow-y: auto; max-height: 500px; }
+    .chart-inner-tall { position: relative; min-height: 1000px; width: 100%; }
+    .chart-box { height: 250px; width: 100%; }
 
-    .chart-box {
-        position: relative;
-        height: 250px;
-        width: 100%;
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; color: var(--text-muted); padding: 10px 5px; border-bottom: 1px solid #334155; }
+    td { padding: 10px 5px; border-bottom: 1px solid rgba(51, 65, 85, 0.4); }
 
-    /* Tables */
-    .table-responsive {
-        overflow-x: auto;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-        white-space: nowrap;
-    }
-    th {
-        text-align: left;
-        color: var(--text-muted);
-        padding: 10px 8px;
-        border-bottom: 1px solid #334155;
-        font-weight: 600;
-    }
-    td {
-        padding: 12px 8px;
-        border-bottom: 1px solid rgba(51, 65, 85, 0.5);
-    }
-    tr:last-child td { border-bottom: none; }
-    
-    .badge {
-        display: inline-block;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: 700;
-    }
-    .badge-high { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
-    .badge-mid { background: rgba(250, 204, 21, 0.2); color: #facc15; }
-    .badge-low { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+    .badge { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+    .badge-success { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
 
-    /* Footer */
-    footer {
-        text-align: center;
-        font-size: 11px;
-        color: #475569;
-        margin-top: 30px;
-        padding-top: 15px;
-        border-top: 1px solid #1e293b;
-    }
+    footer { text-align: center; font-size: 11px; color: #475569; margin-top: 30px; }
 </style>
 </head>
 
 <body>
 
 <header>
-    <h1>PW Target Dashboard</h1>
-    <div class="sub-header">
-        <div class="live-dot"></div>
-        Live Data Sync
-    </div>
+    <h1>PW Vidyapeeth Dashboard</h1>
+    <div style="font-size:12px; color:#94a3b8">Performance Tracking System</div>
 </header>
 
 <div class="container">
-    
     <div class="kpi-grid grid-4">
-        <div class="kpi-card">
-            <div class="kpi-label">Total Target</div>
-            <div class="kpi-value" id="tTarget">...</div>
-        </div>
-        <div class="kpi-card highlight">
-            <div class="kpi-label">Achieved</div>
-            <div class="kpi-value" id="tAch">...</div>
-        </div>
-        <div class="kpi-card success">
-            <div class="kpi-label">Achievement %</div>
-            <div class="kpi-value" id="tPct">...</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Delta (Gap)</div>
-            <div class="kpi-value" id="tDelta">...</div>
-        </div>
+        <div class="kpi-card"><div class="kpi-label">Total Target</div><div class="kpi-value" id="tTarget">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Achieved</div><div class="kpi-value" style="color:#38bdf8" id="tAch">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Achievement %</div><div class="kpi-value" style="color:#4ade80" id="tPct">0%</div></div>
+        <div class="kpi-card"><div class="kpi-label">Delta</div><div class="kpi-value" id="tDelta">0</div></div>
     </div>
 
     <div class="grid grid-2">
-        
         <div class="card">
-            <h3>📊 Center Performance</h3>
+            <h3>📊 Center Performance (Sorted)</h3>
             <div class="chart-wrapper-scroll">
-                <div class="chart-inner-tall">
-                    <canvas id="bar"></canvas>
-                </div>
+                <div class="chart-inner-tall"><canvas id="bar"></canvas></div>
             </div>
         </div>
-
         <div class="card">
             <h3>📈 Overall Progress</h3>
-            <div class="chart-box">
-                <canvas id="pie"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid" style="margin-top:15px">
-        <div class="card">
-            <h3>🔍 Specific Center Analysis</h3>
-            <select id="centerSelect">
-                <option value="">Loading centers...</option>
-            </select>
+            <div class="chart-box"><canvas id="pie"></canvas></div>
             
+            <h3 style="margin-top:20px">🔍 Center Lookup</h3>
+            <select id="centerSelect"><option value="">Loading...</option></select>
             <div class="kpi-grid">
-                <div class="kpi-card"><div class="kpi-label">Center Target</div><div class="kpi-value" id="cTarget">-</div></div>
-                <div class="kpi-card highlight"><div class="kpi-label">Center Achieved</div><div class="kpi-value" id="cAch">-</div></div>
-                <div class="kpi-card success"><div class="kpi-label">Center %</div><div class="kpi-value" id="cPct">-</div></div>
-                <div class="kpi-card"><div class="kpi-label">Remaining</div><div class="kpi-value" id="cDelta">-</div></div>
+                <div class="kpi-card"><div class="kpi-label">Target</div><div class="kpi-value" id="cTarget">-</div></div>
+                <div class="kpi-card"><div class="kpi-label">Achieved</div><div class="kpi-value" id="cAch">-</div></div>
             </div>
-
-            <div class="chart-box" style="margin-top:20px; height:200px;">
-                <canvas id="centerPie"></canvas>
-            </div>
+            <div class="chart-box" style="height:150px"><canvas id="centerPie"></canvas></div>
         </div>
     </div>
 
     <div class="grid grid-2" style="margin-top:15px">
         <div class="card">
-            <h3>🏆 Top Performers</h3>
-            <div class="table-responsive">
-                <table id="topCenters">
-                    <thead><tr><th>Center</th><th>% Achieved</th><th>Target</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <h3>🏆 Top 5 Centers</h3>
+            <table><thead><tr><th>Center</th><th>%</th><th>Target</th></tr></thead><tbody id="topBody"></tbody></table>
         </div>
         <div class="card">
-            <h3>⚠️ Needs Attention (0 Ach)</h3>
-            <div class="table-responsive">
-                <table id="zeroCenters">
-                    <thead><tr><th>Center</th><th>Target</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <h3>⚠️ Zero Achievement</h3>
+            <table><thead><tr><th>Center</th><th>Target</th></tr></thead><tbody id="zeroBody"></tbody></table>
         </div>
     </div>
-
-    <footer>
-        Confidential • Physics Wallah Vidyapeeth • <span id="lastUpdated"></span>
-    </footer>
+    <footer>© 2026 Physics Wallah • Last Refresh: <span id="syncTime"></span></footer>
 </div>
 
 <script>
 const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
-let barChart, pieChart, centerPieChart; 
-let centersData = []; 
-let selectedCenter = "";
+let barChart, pieChart, centerPieChart;
+let centersData = [];
 
 function updateDashboard(){
-  document.getElementById("lastUpdated").innerText = "Updated: " + new Date().toLocaleTimeString();
-  
-  Papa.parse(csvURL, {
-    download: true,
-    complete: (res) => {
-        const rows = res.data.filter(r => r.length); 
-        if(rows.length < 2) return;
+    Papa.parse(csvURL, {
+        download: true,
+        complete: (res) => {
+            const rows = res.data.filter(r => r.length > 1);
+            if(rows.length < 2) return;
 
-        // 1. Process Totals
-        const GT = rows[rows.length-1]; 
-        const totalTarget = +GT[1] || 0; 
-        const totalAchieved = +GT[2] || 0; 
-        const totalRemaining = Math.max(0, totalTarget - totalAchieved);
-        
-        document.getElementById("tTarget").innerText = totalTarget.toLocaleString();
-        document.getElementById("tAch").innerText = totalAchieved.toLocaleString();
-        document.getElementById("tPct").innerText = GT[3] || "0%";
-        document.getElementById("tDelta").innerText = (totalTarget - totalAchieved).toLocaleString();
+            const GT = rows[rows.length-1];
+            document.getElementById("tTarget").innerText = (+GT[1]||0).toLocaleString();
+            document.getElementById("tAch").innerText = (+GT[2]||0).toLocaleString();
+            document.getElementById("tPct").innerText = GT[3] || "0%";
+            document.getElementById("tDelta").innerText = (+GT[4]||0).toLocaleString();
+            document.getElementById("syncTime").innerText = new Date().toLocaleTimeString();
 
-        // 2. Process Center Data
-        centersData = []; 
-        const centers=[], target=[], achieved=[];
-        
-        for(let i=1; i<rows.length-1; i++){
-            const r = rows[i];
-            if(!r || !r[0]) continue;
-            
-            const t = +r[1] || 0;
-            const a = +r[2] || 0;
-            const delta = t - a;
-            const pctVal = t > 0 ? (a/t)*100 : 0;
-            const pct = pctVal.toFixed(1) + "%";
-            
-            centers.push(r[0]);
-            target.push(t);
-            achieved.push(a);
-            
-            centersData.push({
-                name: r[0],
-                target: t,
-                achieved: a,
-                pct: pct,
-                pctVal: pctVal,
-                delta: delta
-            });
-        }
+            // Data Processing with Trophy & Sorting
+            centersData = [];
+            for(let i=1; i<rows.length-1; i++){
+                const r = rows[i];
+                const t = +r[1]||0;
+                const a = +r[2]||0;
+                const p = t > 0 ? (a/t)*100 : 0;
+                // Add Trophy if 100% or more
+                const displayName = p >= 100 ? "🏆 " + r[0] : r[0];
+                
+                centersData.push({ name: r[0], display: displayName, target: t, achieved: a, pct: p });
+            }
 
-        // 3. Update Bar Chart (Overlaid Progress Style)
-        const barLabels = centers.map(c => {
-            return c.length > 15 ? c.substring(0,15) + '...' : c;
-        });
-        
-        const barColorsAch = centersData.map(c => c.name === selectedCenter ? '#facc15' : '#38bdf8');
+            // SORT: Highest Achievement first
+            centersData.sort((a,b) => b.pct - a.pct);
 
-        if(barChart){
-            barChart.data.labels = barLabels;
-            barChart.data.datasets[0].data = achieved;
-            barChart.data.datasets[0].backgroundColor = barColorsAch;
-            barChart.data.datasets[1].data = target;
-            barChart.update();
-        } else {
-            barChart = new Chart(document.getElementById("bar"), {
-                type: "bar",
-                data: {
-                    labels: barLabels,
-                    datasets: [
-                        { 
-                            label: "Achieved", 
-                            data: achieved, 
-                            backgroundColor: barColorsAch, 
-                            // Order 1 ensures this draws ON TOP of order 2
-                            order: 1,
-                            grouped: false, // Ensures they overlap
-                            barPercentage: 0.5, // Thinner bar inside
-                            categoryPercentage: 1.0,
-                            borderRadius: 4
+            const labels = centersData.map(d => d.display);
+            const targets = centersData.map(d => d.target);
+            const achieved = centersData.map(d => d.achieved);
+
+            // Bar Chart Update
+            if(barChart){
+                barChart.data.labels = labels;
+                barChart.data.datasets[0].data = achieved;
+                barChart.data.datasets[1].data = targets;
+                barChart.update();
+            } else {
+                barChart = new Chart(document.getElementById("bar"), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Achieved', data: achieved, backgroundColor: '#38bdf8', order: 1, grouped: false, barPercentage: 0.6, borderRadius: 4 },
+                            { label: 'Target', data: targets, backgroundColor: '#334155', order: 2, grouped: false, barPercentage: 0.6, borderRadius: 4 }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y', maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#94a3b8', font: {family:'Outfit'} } },
+                            datalabels: {
+                                color: '#fff',
+                                font: { weight: 'bold', size: 10 },
+                                formatter: (val, ctx) => {
+                                    // Index 0 is Blue (Achieved), Index 1 is Grey (Target)
+                                    if(ctx.datasetIndex === 0) return val > 0 ? val.toLocaleString() : '';
+                                    if(ctx.datasetIndex === 1) return 'Target: ' + val.toLocaleString();
+                                },
+                                anchor: 'end', align: 'end'
+                            }
                         },
-                        { 
-                            label: "Target", 
-                            data: target, 
-                            backgroundColor: "#334155", // Grey background
-                            order: 2, 
-                            grouped: false, // Ensures they overlap
-                            barPercentage: 0.5, // Matches width
-                            categoryPercentage: 1.0,
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    indexAxis: 'y',
-                    maintainAspectRatio: false,
-                    responsive: true,
-                    plugins: {
-                        legend: { display: true, labels: { color: "#94a3b8", font: {family: 'Outfit'} } },
-                        datalabels: {
-                            color: "white", anchor: "end", align: "end", 
-                            formatter: (val, ctx) => {
-                                // Only show label for the Blue (Achieved) bar
-                                if(ctx.datasetIndex === 0 && val > 0) return val.toLocaleString();
-                                return '';
-                            },
-                            font: { weight: "bold", size: 10, family: 'Outfit' }
+                        scales: {
+                            x: { display: false },
+                            y: { ticks: { color: '#cbd5e1', font: {family:'Outfit'} }, grid: { display: false } }
                         }
                     },
-                    scales: {
-                        x: { display: false },
-                        y: { 
-                            ticks: { color: "#cbd5e1", font: {size: 11, family: 'Outfit'} },
-                            grid: { display: false }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
+                    plugins: [ChartDataLabels]
+                });
+            }
 
-        // 4. Update Overview Pie
-        if(pieChart){
-            pieChart.data.datasets[0].data = [totalAchieved, totalRemaining];
-            pieChart.update();
-        } else {
-            pieChart = new Chart(document.getElementById("pie"), {
-                type: "doughnut",
-                data: {
-                    labels: ["Achieved", "Remaining"],
-                    datasets: [{
-                        data: [totalAchieved, totalRemaining],
-                        backgroundColor: ["#38bdf8", "#1e293b"],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { color: "white", boxWidth: 10 } },
-                        datalabels: {
-                            color: "white",
-                            formatter: (val, ctx) => {
-                                let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                                let percentage = (val*100 / sum).toFixed(0) + "%";
-                                return percentage;
-                            },
-                            font: { weight: "bold" }
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
-            });
-        }
+            // Update Tables & Select
+            const select = document.getElementById("centerSelect");
+            if(select.options.length <= 1){
+                select.innerHTML = '<option value="">-- Select Center --</option>';
+                centersData.forEach(c => { let opt=document.createElement("option"); opt.value=c.name; opt.innerText=c.name; select.appendChild(opt); });
+            }
 
-        // 5. Populate Dropdown
-        const select = document.getElementById("centerSelect");
-        if(select.options.length <= 1){
-            select.innerHTML = '<option value="">-- Tap to Select Center --</option>';
-            centersData.forEach(c => {
-                const opt = document.createElement("option");
-                opt.value = c.name;
-                opt.innerText = c.name;
-                select.appendChild(opt);
+            let topH = "";
+            centersData.slice(0,5).forEach(c => {
+                topH += `<tr><td>${c.display}</td><td><span class="badge badge-success">${c.pct.toFixed(1)}%</span></td><td>${c.target}</td></tr>`;
             });
-        }
+            document.getElementById("topBody").innerHTML = topH;
 
-        // 6. Top Centers Table
-        const topCenters = [...centersData].sort((a,b) => b.pctVal - a.pctVal).slice(0, 5);
-        const topTbody = document.querySelector("#topCenters tbody");
-        topTbody.innerHTML = "";
-        topCenters.forEach(c => {
-            const tr = document.createElement("tr");
-            let badgeClass = c.pctVal >= 100 ? 'badge-high' : (c.pctVal >= 50 ? 'badge-mid' : 'badge-low');
-            tr.innerHTML = `
-                <td style="font-weight:600; color:#e2e8f0">${c.name}</td>
-                <td><span class="badge ${badgeClass}">${c.pct}</span></td>
-                <td>${c.target.toLocaleString()}</td>
-            `;
-            topTbody.appendChild(tr);
-        });
-
-        // 7. Zero Achieved Table
-        const zeroCenters = centersData.filter(c => c.achieved === 0);
-        const zeroTbody = document.querySelector("#zeroCenters tbody");
-        zeroTbody.innerHTML = "";
-        if(zeroCenters.length === 0) {
-            zeroTbody.innerHTML = "<tr><td colspan='2' style='text-align:center; color:#4ade80'>All centers active!</td></tr>";
-        } else {
-            zeroCenters.forEach(c => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td style="color:#f87171">${c.name}</td><td>${c.target.toLocaleString()}</td>`;
-                zeroTbody.appendChild(tr);
+            let zeroH = "";
+            centersData.filter(c => c.achieved === 0).forEach(c => {
+                zeroH += `<tr><td style="color:#f87171">${c.name}</td><td>${c.target}</td></tr>`;
             });
+            document.getElementById("zeroBody").innerHTML = zeroH || "<tr><td colspan='2'>No zero achievers!</td></tr>";
         }
-    }
-  });
+    });
 }
 
-// Dropdown Event Listener
 document.getElementById("centerSelect").addEventListener("change", function(){
-  selectedCenter = this.value;
-  const cData = centersData.find(c => c.name === this.value);
-  
-  if(!cData) return;
-
-  const remaining = Math.max(0, cData.target - cData.achieved);
-  
-  document.getElementById("cTarget").innerText = cData.target.toLocaleString();
-  document.getElementById("cAch").innerText = cData.achieved.toLocaleString();
-  document.getElementById("cPct").innerText = cData.pct;
-  document.getElementById("cDelta").innerText = remaining.toLocaleString();
-
-  // Update Center Pie
-  if(centerPieChart){
-      centerPieChart.data.datasets[0].data = [cData.achieved, remaining];
-      centerPieChart.update();
-  } else {
-      centerPieChart = new Chart(document.getElementById("centerPie"), {
-          type: "doughnut",
-          data: {
-              labels: ["Achieved", "Remaining"],
-              datasets: [{
-                  data: [cData.achieved, remaining],
-                  backgroundColor: ["#facc15", "#334155"],
-                  borderWidth: 0
-              }]
-          },
-          options: {
-              maintainAspectRatio: false,
-              cutout: '70%',
-              plugins: {
-                  legend: { position: 'right', labels: { color: "white", boxWidth:10, font:{size:10} } },
-                  datalabels: { display: false }
-              }
-          }
-      });
-  }
-  
-  updateDashboard(); 
+    const c = centersData.find(d => d.name === this.value);
+    if(!c) return;
+    document.getElementById("cTarget").innerText = c.target.toLocaleString();
+    document.getElementById("cAch").innerText = c.achieved.toLocaleString();
+    
+    const rem = Math.max(0, c.target - c.achieved);
+    if(centerPieChart){
+        centerPieChart.data.datasets[0].data = [c.achieved, rem];
+        centerPieChart.update();
+    } else {
+        centerPieChart = new Chart(document.getElementById("centerPie"), {
+            type:'doughnut',
+            data: { labels:['Achieved','Rem'], datasets:[{data:[c.achieved, rem], backgroundColor:['#38bdf8','#1e293b'], borderWidth:0}]},
+            options: { maintainAspectRatio:false, cutout:'70%', plugins:{ legend:{display:false}, datalabels:{display:false} }}
+        });
+    }
 });
 
 updateDashboard();
 setInterval(updateDashboard, 6000);
-
 </script>
 </body>
 </html>
