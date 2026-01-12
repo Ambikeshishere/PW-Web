@@ -2,34 +2,34 @@
 <html>
 <head>
 <title>PW Target Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
 body{
   margin:0;
-  padding:15px; /* Mobile ke liye padding kam ki */
+  padding:15px;
   background:#020617;
   font-family:Inter,system-ui;
   color:white;
 }
 h1{
-  font-size:24px; /* Mobile par heading choti */
+  font-size:24px;
   background:linear-gradient(90deg,#fb923c,#38bdf8);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  margin-bottom: 5px;
+  margin-bottom:5px;
 }
 .sub{color:#94a3b8;margin-bottom:20px; font-size: 14px;}
 
 .kpis{
   display:grid;
-  grid-template-columns: repeat(2, 1fr); /* Mobile par 2 columns */
+  grid-template-columns: repeat(2, 1fr);
   gap:12px;
   margin-bottom:20px;
 }
-
-/* Desktop ke liye vapas 4 columns */
 @media (min-width: 768px) {
   .kpis { grid-template-columns: repeat(4, 1fr); }
   h1 { font-size: 32px; }
@@ -48,16 +48,13 @@ h1{
 
 .grid{
   display:grid;
-  grid-template-columns: 1fr; /* Mobile par ek ke niche ek */
+  grid-template-columns: 1fr;
   gap:20px;
 }
-
-/* Desktop par side-by-side */
 @media (min-width: 1024px) {
   .grid { grid-template-columns: 2fr 1fr; }
 }
 
-/* Charts container to ensure aspect ratio */
 .chart-container {
   position: relative;
   height: 300px;
@@ -65,6 +62,31 @@ h1{
 }
 
 h3 { font-size: 16px; margin-top: 0; color: #f8fafc; }
+
+select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  background:#020617;
+  color:white;
+  border:1px solid #1e293b;
+  margin-bottom:10px;
+}
+
+.center-kpis{
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:12px;
+}
+.center-kpis .card{
+  padding:10px;
+}
+
+@media (max-width: 600px){
+  .center-kpis{
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
@@ -73,13 +95,15 @@ h3 { font-size: 16px; margin-top: 0; color: #f8fafc; }
 <h1>PW Target vs Achievement</h1>
 <div class="sub">Live from Google Sheets</div>
 
+<!-- Main KPIs -->
 <div class="kpis">
-  <div class="card"><div class="label">Grand Target</div><div class="big" id="tTarget">0</div></div>
+  <div class="card"><div class="label">Total Target</div><div class="big" id="tTarget">0</div></div>
   <div class="card"><div class="label">Achieved</div><div class="big" id="tAch">0</div></div>
   <div class="card"><div class="label">Achievement %</div><div class="big" id="tPct">0%</div></div>
   <div class="card"><div class="label">Delta</div><div class="big" id="tDelta">0</div></div>
 </div>
 
+<!-- Main Charts -->
 <div class="grid">
   <div class="card">
     <h3>Center wise Target vs Achieved</h3>
@@ -95,70 +119,151 @@ h3 { font-size: 16px; margin-top: 0; color: #f8fafc; }
   </div>
 </div>
 
+<!-- Center-specific mini-dashboard -->
+<div class="grid" style="margin-top:20px;">
+  <div class="card" style="grid-column:1 / -1;">
+    <h3 id="centerPieTitle">Center Achieved vs Remaining</h3>
+    
+    <!-- Dropdown inside card -->
+    <select id="centerSelect">
+      <option value="">-- Select a Center --</option>
+    </select>
+
+    <!-- Center KPIs -->
+    <div class="center-kpis">
+      <div class="card"><div class="label">Target</div><div class="big" id="cTarget">0</div></div>
+      <div class="card"><div class="label">Achieved</div><div class="big" id="cAch">0</div></div>
+      <div class="card"><div class="label">Achievement %</div><div class="big" id="cPct">0%</div></div>
+      <div class="card"><div class="label">Delta</div><div class="big" id="cDelta">0</div></div>
+    </div>
+
+    <!-- Center pie chart -->
+    <div class="chart-container" style="margin-top:15px;">
+      <canvas id="centerPie"></canvas>
+    </div>
+  </div>
+</div>
+
 <script>
-const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
+const csvURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTKpBKtR4FPQlTcRkMLLoyfPpsINfTUph6ZY-fZ15VlYmh5QGoOYZstOigBcCzIM3tWiMElXgrC7rIs/pub?gid=529778447&single=true&output=csv";
 
-Papa.parse(csvURL,{
-  download:true,
-  complete:(res)=>{
-    const rows=res.data;
-    const GT = rows[28];
+let barChart, pieChart, centerPieChart;
+let centersData = [];
 
-    document.getElementById("tTarget").innerText = (+GT[1]).toLocaleString();
-    document.getElementById("tAch").innerText = (+GT[2]).toLocaleString();
-    document.getElementById("tPct").innerText = GT[3];
-    document.getElementById("tDelta").innerText = (+GT[4]).toLocaleString();
+function updateDashboard() {
+  Papa.parse(csvURL, {
+    download: true,
+    error: (err) => { console.error("CSV load failed:", err); },
+    complete: (res) => {
+      const rows = res.data.filter(r => r.length);
+      if(rows.length < 2) return;
 
-    let centers=[], target=[], achieved=[];
-    for(let i=2;i<=27;i++){
-      const r = rows[i];
-      if(!r || !r[0]) continue;
-      centers.push(r[0]);
-      target.push(+r[1]);
-      achieved.push(+r[2]);
+      const GT = rows[rows.length - 1];
+      document.getElementById("tTarget").innerText = (+GT[1] || 0).toLocaleString();
+      document.getElementById("tAch").innerText = (+GT[2] || 0).toLocaleString();
+      document.getElementById("tPct").innerText = GT[3] || "0%";
+      document.getElementById("tDelta").innerText = (+GT[4] || 0).toLocaleString();
+
+      // Center data
+      const centers=[], target=[], achieved=[];
+      centersData = [];
+      for(let i=1; i<rows.length - 1; i++){
+        const r = rows[i];
+        if(!r || !r[0]) continue;
+        centers.push(r[0]);
+        target.push(+r[1] || 0);
+        achieved.push(+r[2] || 0);
+        const delta = (+r[1] || 0) - (+r[2] || 0);
+        const pct = ((+r[2]||0)/(+r[1]||1)*100).toFixed(1)+"%";
+        centersData.push({name: r[0], target: +r[1]||0, achieved: +r[2]||0, pct, delta});
+      }
+
+      const fontSize = Math.max(10, Math.min(14, window.innerWidth/50));
+
+      // Bar chart
+      if(barChart){
+        barChart.data.labels = centers;
+        barChart.data.datasets[0].data = target;
+        barChart.data.datasets[1].data = achieved;
+        barChart.options.scales.x.ticks.font.size = fontSize;
+        barChart.update();
+      } else {
+        barChart = new Chart(document.getElementById("bar"),{
+          type:"bar",
+          data:{ labels: centers, datasets:[
+            {label:"Target", data: target, backgroundColor:"#fb923c"},
+            {label:"Achieved", data: achieved, backgroundColor:"#38bdf8"}
+          ]},
+          options:{
+            maintainAspectRatio:false,
+            responsive:true,
+            plugins:{
+              legend:{labels:{color:"white", boxWidth:12}},
+              datalabels:{color:"white", anchor:"end", align:"top", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}
+            },
+            scales:{ x:{ticks:{color:"#94a3b8", font:{size:fontSize}}}, y:{ticks:{color:"#94a3b8"}} }
+          },
+          plugins:[ChartDataLabels]
+        });
+      }
+
+      // Overall pie
+      if(pieChart){
+        pieChart.data.datasets[0].data = [+GT[1]||0, +GT[2]||0];
+        pieChart.update();
+      } else {
+        pieChart = new Chart(document.getElementById("pie"),{
+          type:"pie",
+          data:{labels:["Target","Achieved"], datasets:[{data:[+GT[1]||0,+GT[2]||0], backgroundColor:["#fb923c","#38bdf8"]}]},
+          options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{color:"white"}}, datalabels:{color:"white", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}}},
+          plugins:[ChartDataLabels]
+        });
+      }
+
+      // Populate dropdown inside mini-dashboard
+      const select = document.getElementById("centerSelect");
+      select.innerHTML = '<option value="">-- Select a Center --</option>';
+      centersData.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.name;
+        opt.innerText = c.name;
+        select.appendChild(opt);
+      });
     }
+  });
+}
 
-    // Bar Chart
-    new Chart(document.getElementById("bar"),{
-      type:"bar",
-      data:{
-        labels:centers,
-        datasets:[
-          {label:"Target",data:target,backgroundColor:"#fb923c"},
-          {label:"Achieved",data:achieved,backgroundColor:"#38bdf8"}
-        ]
-      },
-      options:{
-        maintainAspectRatio: false,
-        responsive:true,
-        plugins:{legend:{labels:{color:"white", boxWidth: 12}}},
-        scales:{
-            x:{ticks:{color:"#94a3b8", font: { size: 10 }}},
-            y:{ticks:{color:"#94a3b8"}}
-        }
-      }
-    });
+// Center-specific dashboard with Achieved vs Remaining
+document.getElementById("centerSelect").addEventListener("change", function(){
+  const cName = this.value;
+  const cData = centersData.find(c=>c.name===cName);
+  if(!cData) return;
 
-    // Pie Chart
-    new Chart(document.getElementById("pie"),{
+  const remaining = cData.target - cData.achieved;
+
+  document.getElementById("centerPieTitle").innerText = `${cName} Achieved vs Remaining`;
+  document.getElementById("cTarget").innerText = cData.target.toLocaleString();
+  document.getElementById("cAch").innerText = cData.achieved.toLocaleString();
+  document.getElementById("cPct").innerText = cData.pct;
+  document.getElementById("cDelta").innerText = cData.delta.toLocaleString();
+
+  if(centerPieChart){
+    centerPieChart.data.datasets[0].data = [cData.achieved, remaining];
+    centerPieChart.data.labels = ["Achieved", "Remaining"];
+    centerPieChart.update();
+  } else {
+    centerPieChart = new Chart(document.getElementById("centerPie"),{
       type:"pie",
-      data:{
-        labels:["Target","Achieved"],
-        datasets:[{
-          data:[+GT[1],+GT[2]],
-          backgroundColor:["#fb923c","#38bdf8"]
-        }]
-      },
-      options:{
-        maintainAspectRatio: false,
-        plugins:{legend:{position: 'bottom', labels:{color:"white"}}}
-      }
+      data:{labels:["Achieved","Remaining"], datasets:[{data:[cData.achieved, remaining], backgroundColor:["#38bdf8","#fb923c"]}]},
+      options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{color:"white"}}, datalabels:{color:"white", formatter: val=>val.toLocaleString(), font:{weight:"bold"}}}},
+      plugins:[ChartDataLabels]
     });
   }
 });
 
-// Auto refresh every 60 seconds (30s might be too fast for some mobile connections)
-setInterval(()=>location.reload(),60000);
+// Initial load
+updateDashboard();
+setInterval(updateDashboard,60000);
 </script>
 
 </body>
