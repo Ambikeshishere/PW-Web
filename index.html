@@ -87,6 +87,7 @@ h1{
   overflow-y: hidden;
   width: 100%;
   padding-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
 }
 .bar-scroll-container::-webkit-scrollbar {
   height: 8px;
@@ -105,6 +106,40 @@ h1{
   position: relative;
 }
 
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .bar-inner {
+    min-width: 800px;
+    height: 900px;
+  }
+  h3 {
+    font-size: 14px;
+  }
+  .card {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bar-inner {
+    min-width: 700px;
+    height: 800px;
+  }
+  .kpis {
+    gap: 8px;
+  }
+  .kpis .card {
+    min-height: 95px;
+    max-height: 95px;
+  }
+  .card .big {
+    font-size: 22px;
+  }
+  .card .label {
+    font-size: 10px;
+  }
+}
+
 .label{color:#94a3b8; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;}
 .grid{display:grid; grid-template-columns:1fr; gap:20px;}
 @media (min-width:1024px){.grid{grid-template-columns:2fr 1fr;}}
@@ -115,8 +150,20 @@ select{
 .center-kpis{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
 .center-kpis .card{padding:10px;}
 @media (max-width:600px){.center-kpis{grid-template-columns:1fr;}}
-table{width:100%; border-collapse:collapse; color:white;}
-th, td{padding:6px; border-bottom:1px solid #334155;}
+table{width:100%; border-collapse:collapse; color:white; font-size: 13px;}
+th, td{padding:8px 6px; border-bottom:1px solid #334155; text-align: left;}
+th{font-weight: 600; color: #94a3b8;}
+
+@media (max-width: 768px) {
+  table{font-size: 12px;}
+  th, td{padding:6px 4px;}
+}
+
+@media (max-width: 480px) {
+  table{font-size: 11px;}
+  th, td{padding:5px 3px;}
+  .grid{gap: 15px;}
+}
 </style>
 </head>
 
@@ -244,6 +291,9 @@ function updateDashboard() {
         const cleaned = c.trim().replace(/\s+/g, ' ');
         const words = cleaned.split(" ");
         
+        // Mobile responsive font size
+        const isMobile = window.innerWidth <= 768;
+        
         if(words.length <= 3) return words;
         
         const third = Math.ceil(words.length / 3);
@@ -256,6 +306,13 @@ function updateDashboard() {
         }
         return lines;
       });
+
+      // Responsive settings
+      const isMobile = window.innerWidth <= 768;
+      const barThickness = isMobile ? 14 : 16;
+      const fontSize = isMobile ? 10 : 11;
+      const dataLabelSize = isMobile ? 10 : 12;
+      const legendSize = isMobile ? 13 : 16;
 
       const barColorsTarget = centers.map(c=> c===selectedCenter ? "#facc15" : "#fb923c");
       const barColorsAch = centers.map(c=> c===selectedCenter ? "#22d3ee" : "#38bdf8");
@@ -273,8 +330,8 @@ function updateDashboard() {
           data:{
             labels: barLabels,
             datasets:[
-              {label:"Target", data: target, backgroundColor: barColorsTarget, barThickness:16, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9},
-              {label:"Achieved", data: achieved, backgroundColor: barColorsAch, barThickness:16, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9}
+              {label:"Target", data: target, backgroundColor: barColorsTarget, barThickness: barThickness, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9},
+              {label:"Achieved", data: achieved, backgroundColor: barColorsAch, barThickness: barThickness, borderRadius:4, categoryPercentage: 0.7, barPercentage: 0.9}
             ]
           },
           options:{
@@ -287,7 +344,7 @@ function updateDashboard() {
                 labels:{
                   color:"white", 
                   boxWidth:20, 
-                  font:{size:16, weight:'bold'},
+                  font:{size: legendSize, weight:'bold'},
                   padding:15
                 }
               },
@@ -297,7 +354,7 @@ function updateDashboard() {
                 align:"end",
                 offset: 4,
                 formatter: val=>val.toLocaleString(), 
-                font:{weight:"bold", size:12}
+                font:{weight:"bold", size: dataLabelSize}
               }
             },
             layout:{padding:{left:15, right:80, top:20, bottom:20}},
@@ -310,7 +367,7 @@ function updateDashboard() {
                 ticks:{
                   color:"#e2e8f0", 
                   autoSkip:false, 
-                  font:{size:11, weight:'500'}, 
+                  font:{size: fontSize, weight:'500'}, 
                   padding:15,
                   maxRotation: 0,
                   minRotation: 0
