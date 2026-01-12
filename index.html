@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PW Target Dashboard</title>
+<title>PW Target Dashboard - Live</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,6 +78,13 @@
     .badge-success { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
     .badge-danger { background: rgba(248, 113, 113, 0.2); color: #f87171; }
 
+    .live-dot {
+        height: 8px; width: 8px; background-color: #4ade80;
+        border-radius: 50%; display: inline-block; margin-right: 5px;
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
     footer { text-align: center; font-size: 11px; color: #475569; margin-top: 30px; }
 </style>
 </head>
@@ -86,7 +93,7 @@
 
 <header>
     <h1>PW Vidyapeeth Dashboard</h1>
-    <div style="font-size:12px; color:#94a3b8">Live Performance Tracker</div>
+    <div style="font-size:12px; color:#94a3b8"><span class="live-dot"></span>Real-Time Performance Tracker</div>
 </header>
 
 <div class="container">
@@ -145,7 +152,7 @@
             </div>
         </div>
     </div>
-    <footer>© Developed by Ambikesh Srivastava• Last Sync: <span id="syncTime"></span></footer>
+    <footer>© Developed by Ambikesh Srivastava • Auto-refreshing every 5s • Last Sync: <span id="syncTime"></span></footer>
 </div>
 
 <script>
@@ -168,6 +175,8 @@ function updateDashboard(){
             document.getElementById("tAch").innerText = tA.toLocaleString();
             document.getElementById("tPct").innerText = GT[3] || "0%";
             document.getElementById("tDelta").innerText = (tT - tA).toLocaleString();
+            
+            // Sync time now includes seconds for visual feedback of the 5s refresh
             document.getElementById("syncTime").innerText = new Date().toLocaleTimeString();
 
             centersData = [];
@@ -186,13 +195,13 @@ function updateDashboard(){
                 });
             }
 
-            // Sort by Achievement %
+            // Keep sorting consistent
             centersData.sort((a,b) => b.pct - a.pct);
 
-            // 1. Overall Pie
+            // 1. Overall Pie Update (Using 'none' to prevent animation loops)
             if(pieChart){
                 pieChart.data.datasets[0].data = [tA, Math.max(0, tT-tA)];
-                pieChart.update();
+                pieChart.update('none');
             } else {
                 pieChart = new Chart(document.getElementById("pie"), {
                     type:'doughnut',
@@ -202,13 +211,13 @@ function updateDashboard(){
                 });
             }
 
-            // 2. Bar Chart
+            // 2. Bar Chart Update
             const labels = centersData.map(d => d.display);
             if(barChart){
                 barChart.data.labels = labels;
                 barChart.data.datasets[0].data = centersData.map(d => d.achieved);
                 barChart.data.datasets[1].data = centersData.map(d => d.target);
-                barChart.update();
+                barChart.update('none');
             } else {
                 barChart = new Chart(document.getElementById("bar"), {
                     type:'bar',
@@ -235,7 +244,7 @@ function updateDashboard(){
                 });
             }
 
-            // 3. Dropdown
+            // 3. Dropdown (Populate only once)
             const select = document.getElementById("centerSelect");
             if(select.options.length <= 1){
                 select.innerHTML = '<option value="">-- Select Center --</option>';
@@ -244,7 +253,7 @@ function updateDashboard(){
                 });
             }
 
-            // 4. Tables Update (Added Achieved Column)
+            // 4. Tables Update
             document.getElementById("topBody").innerHTML = centersData.slice(0,5).map(c => `
                 <tr>
                     <td>${c.display}</td>
@@ -266,6 +275,7 @@ function updateDashboard(){
     });
 }
 
+// Single Center Selection Update
 document.getElementById("centerSelect").addEventListener("change", function(){
     const c = centersData.find(d => d.name === this.value);
     if(!c) return;
@@ -286,8 +296,11 @@ document.getElementById("centerSelect").addEventListener("change", function(){
     }
 });
 
+// Run immediately on load
 updateDashboard();
-setInterval(updateDashboard, 60000);
+
+// Auto-Refresh Logic (5000ms = 5s)
+setInterval(updateDashboard, 500);
 </script>
 </body>
 </html>
