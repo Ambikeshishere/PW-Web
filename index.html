@@ -341,13 +341,6 @@ let barChart, pieChart, centerPieChart;
 let centersData = []; 
 let selectedCenter = "";
 
-// Helper to get color based on percentage
-function getStatusColor(pctVal) {
-    if(pctVal >= 100) return '#4ade80'; // Green
-    if(pctVal >= 50) return '#38bdf8'; // Blue
-    return '#f472b6'; // Pink/Redish
-}
-
 function updateDashboard(){
   document.getElementById("lastUpdated").innerText = "Updated: " + new Date().toLocaleTimeString();
   
@@ -357,7 +350,7 @@ function updateDashboard(){
         const rows = res.data.filter(r => r.length); 
         if(rows.length < 2) return;
 
-        // 1. Process Totals (Last Row usually)
+        // 1. Process Totals
         const GT = rows[rows.length-1]; 
         const totalTarget = +GT[1] || 0; 
         const totalAchieved = +GT[2] || 0; 
@@ -396,9 +389,8 @@ function updateDashboard(){
             });
         }
 
-        // 3. Update Bar Chart
+        // 3. Update Bar Chart (Overlaid Progress Style)
         const barLabels = centers.map(c => {
-            // Smart truncate for mobile labels
             return c.length > 15 ? c.substring(0,15) + '...' : c;
         });
         
@@ -406,9 +398,9 @@ function updateDashboard(){
 
         if(barChart){
             barChart.data.labels = barLabels;
-            barChart.data.datasets[0].data = target;
-            barChart.data.datasets[1].data = achieved;
-            barChart.data.datasets[1].backgroundColor = barColorsAch;
+            barChart.data.datasets[0].data = achieved;
+            barChart.data.datasets[0].backgroundColor = barColorsAch;
+            barChart.data.datasets[1].data = target;
             barChart.update();
         } else {
             barChart = new Chart(document.getElementById("bar"), {
@@ -416,8 +408,27 @@ function updateDashboard(){
                 data: {
                     labels: barLabels,
                     datasets: [
-                        { label: "Target", data: target, backgroundColor: "#334155", barThickness: 12, borderRadius: 4 },
-                        { label: "Achieved", data: achieved, backgroundColor: barColorsAch, barThickness: 12, borderRadius: 4 }
+                        { 
+                            label: "Achieved", 
+                            data: achieved, 
+                            backgroundColor: barColorsAch, 
+                            // Order 1 ensures this draws ON TOP of order 2
+                            order: 1,
+                            grouped: false, // Ensures they overlap
+                            barPercentage: 0.5, // Thinner bar inside
+                            categoryPercentage: 1.0,
+                            borderRadius: 4
+                        },
+                        { 
+                            label: "Target", 
+                            data: target, 
+                            backgroundColor: "#334155", // Grey background
+                            order: 2, 
+                            grouped: false, // Ensures they overlap
+                            barPercentage: 0.5, // Matches width
+                            categoryPercentage: 1.0,
+                            borderRadius: 4
+                        }
                     ]
                 },
                 options: {
@@ -428,7 +439,11 @@ function updateDashboard(){
                         legend: { display: true, labels: { color: "#94a3b8", font: {family: 'Outfit'} } },
                         datalabels: {
                             color: "white", anchor: "end", align: "end", 
-                            formatter: (val) => val > 0 ? val.toLocaleString() : '',
+                            formatter: (val, ctx) => {
+                                // Only show label for the Blue (Achieved) bar
+                                if(ctx.datasetIndex === 0 && val > 0) return val.toLocaleString();
+                                return '';
+                            },
                             font: { weight: "bold", size: 10, family: 'Outfit' }
                         }
                     },
@@ -532,7 +547,6 @@ document.getElementById("centerSelect").addEventListener("change", function(){
 
   const remaining = Math.max(0, cData.target - cData.achieved);
   
-  // Animate numbers (simple text replacement)
   document.getElementById("cTarget").innerText = cData.target.toLocaleString();
   document.getElementById("cAch").innerText = cData.achieved.toLocaleString();
   document.getElementById("cPct").innerText = cData.pct;
@@ -564,13 +578,10 @@ document.getElementById("centerSelect").addEventListener("change", function(){
       });
   }
   
-  // Highlight bar in main chart
   updateDashboard(); 
 });
 
-// Initial Load
 updateDashboard();
-// Auto-refresh every 60 seconds
 setInterval(updateDashboard, 6000);
 
 </script>
