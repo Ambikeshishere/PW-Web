@@ -226,6 +226,7 @@ function updateDashboard(){
 
     Papa.parse(liveURL, {
         download: true,
+        skipEmptyLines: true,
         complete: (res) => {
             const rows = res.data.filter(r => r.length > 3);
             if(rows.length < 2) return;
@@ -242,7 +243,7 @@ function updateDashboard(){
             document.getElementById("tPct").innerText = totalPct;
             document.getElementById("centerPct").innerText = totalPct; // For Pie Center
             document.getElementById("tDelta").innerText = (totalTarget - totalAchieved).toLocaleString();
-            document.getElementById("tB2B").innerText = (+GT[4]||0).toLocaleString();
+            document.getElementById("tB2B").innerText = (+GT[5]||0).toLocaleString();
             document.getElementById("syncTime").innerText = new Date().toLocaleTimeString();
 
             centersData = [];
@@ -250,7 +251,7 @@ function updateDashboard(){
                 const r = rows[i];
                 const t = +r[1]||0;
                 const a = +r[2]||0;
-                const b2b = +r[4]||0;
+                const b2b = +r[5]||0;
                 const p = t > 0 ? (a/t)*100 : 0;
                 const trophyName = p >= 100 ? "🏆 " + r[0] : r[0];
                 
@@ -291,7 +292,9 @@ function updateDashboard(){
                         }]
                     },
                     options: { 
-                        maintainAspectRatio: false, 
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 0 },
                         plugins: { legend: { display: false }, datalabels: { color: '#fff', align: 'top', font: {weight: 'bold'} } },
                         scales: {
                             x: { ticks: { color: '#94a3b8', font: {size: 11} }, grid: { display: false } },
@@ -319,7 +322,10 @@ function updateDashboard(){
                         ]
                     },
                     options:{
-                        indexAxis:'y', maintainAspectRatio:false,
+                        indexAxis:'y', 
+                        responsive: true,
+                        maintainAspectRatio:false,
+                        animation: { duration: 0 },
                         scales:{ 
                             x:{ stacked: true, display: false }, 
                             y:{ 
@@ -360,8 +366,10 @@ function updateDashboard(){
                         }]
                     },
                     options:{
+                        responsive: true,
                         maintainAspectRatio:false, 
-                        cutout:'75%', 
+                        cutout:'75%',
+                        animation: { duration: 0 },
                         plugins:{
                             legend:{ display: true, position: 'bottom', labels: { color: '#94a3b8', font:{size:11} } }, 
                             datalabels:{
@@ -426,7 +434,13 @@ function updateCenterCards(c) {
         centerPieChart = new Chart(document.getElementById("centerPie"), {
             type:'doughnut',
             data: { datasets:[{data:[c.achieved, c.delta], backgroundColor:['#38bdf8','#1e293b'], borderWidth:0}]},
-            options: { maintainAspectRatio:false, cutout:'70%', plugins:{legend:{display:false}, datalabels:{display:false}}}
+            options: { 
+                responsive: true,
+                maintainAspectRatio:false, 
+                cutout:'70%', 
+                animation: { duration: 0 },
+                plugins:{legend:{display:false}, datalabels:{display:false}}
+            }
         });
     }
 }
@@ -437,7 +451,7 @@ document.getElementById("centerSelect").addEventListener("change", function(){
 });
 
 updateDashboard();
-setInterval(updateDashboard, 500);
+setInterval(updateDashboard, 5000);
 </script>
 </body>
 </html>
