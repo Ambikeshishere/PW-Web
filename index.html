@@ -16,13 +16,14 @@
 <style>
     :root {
         --bg-dark: #020617;
-        --card-bg: rgba(15, 23, 42, 0.7);
+        --card-bg: rgba(15, 23, 42, 0.75);
         --card-border: rgba(56, 189, 248, 0.2);
         --accent-primary: #38bdf8;
         --success: #4ade80;
         --text-main: #f1f5f9;
         --text-muted: #94a3b8;
         --warning: #fb923c;
+        --danger: #f87171;
     }
 
     * { box-sizing: border-box; }
@@ -73,20 +74,20 @@
     }
     .card h3::before { content: ''; width: 4px; height: 18px; background: var(--accent-primary); border-radius: 10px; }
 
-    /* Scrollable Chart Containers */
-    .scroll-x-container { width: 100%; overflow-x: auto; overflow-y: hidden; cursor: grab; }
-    .scroll-y-container { width: 100%; overflow-y: auto; max-height: 500px; }
+    /* Scroll Containers */
+    .scroll-x-container { width: 100%; overflow-x: auto; cursor: grab; padding-bottom: 10px; }
+    .scroll-y-container { width: 100%; overflow-y: auto; max-height: 550px; }
     
     .kpi-card { 
-        background: rgba(0, 0, 0, 0.3); border-radius: 16px; padding: 15px; 
+        background: rgba(0, 0, 0, 0.4); border-radius: 12px; padding: 15px; 
         text-align: center; border: 1px solid var(--card-border);
     }
-    .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-    .kpi-value { font-size: 22px; font-weight: 700; }
+    .kpi-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 1px;}
+    .kpi-value { font-size: 20px; font-weight: 700; }
 
     select {
         width: 100%; padding: 12px; border-radius: 12px; background: #0f172a; color: white;
-        border: 1px solid var(--card-border); margin-bottom: 20px; font-family: inherit;
+        border: 1px solid var(--card-border); margin-bottom: 20px; font-family: inherit; font-size: 14px;
     }
 
     .live-dot {
@@ -97,10 +98,23 @@
     }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
+    /* Table Styles */
+    .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { text-align: left; color: var(--text-muted); padding: 12px 8px; border-bottom: 1px solid var(--card-border); }
+    th { text-align: left; color: var(--text-muted); padding: 12px 8px; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
     td { padding: 12px 8px; border-bottom: 1px solid rgba(148, 163, 184, 0.05); }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge-success { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.2); }
     
+    /* Pie Chart Container for Overlay */
+    .pie-container { position: relative; height: 250px; width: 100%; }
+    .pie-center-text {
+        position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%);
+        text-align: center; pointer-events: none;
+    }
+    .pie-percent { font-size: 28px; font-weight: 700; color: #f1f5f9; }
+    .pie-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
+
     footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 40px; }
 </style>
 </head>
@@ -119,31 +133,38 @@
         <div class="kpi-card"><div class="kpi-label">Total Target</div><div class="kpi-value" id="tTarget">0</div></div>
         <div class="kpi-card"><div class="kpi-label">Total Achieved</div><div class="kpi-value" style="color:var(--accent-primary)" id="tAch">0</div></div>
         <div class="kpi-card"><div class="kpi-label">Avg Achievement</div><div class="kpi-value" style="color:var(--success)" id="tPct">0%</div></div>
-        <div class="kpi-card"><div class="kpi-label">B2B Forms Filled</div><div class="kpi-value" style="color:var(--warning)" id="tB2B">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Total B2B Forms</div><div class="kpi-value" style="color:var(--warning)" id="tB2B">0</div></div>
     </div>
 
     <div class="card" style="margin-bottom: 20px;">
         <h3>📈 B2B Form Submission Trend (Scroll Right →)</h3>
         <div class="scroll-x-container">
-            <div style="width: 2500px; height: 350px;"> <canvas id="lineChart"></canvas>
+            <div style="width: 2800px; height: 350px;"> 
+                <canvas id="lineChart"></canvas>
             </div>
         </div>
     </div>
 
     <div class="grid grid-3">
         <div class="card">
-            <h3>🎮 Center Completion Progress (Target)</h3>
+            <h3>🎮 Center Completion Levels</h3>
             <div class="scroll-y-container">
-                <div style="height: 1200px;"><canvas id="bar"></canvas></div>
+                <div style="height: 1400px;"><canvas id="bar"></canvas></div>
             </div>
         </div>
 
         <div class="card">
             <h3>🎯 Overall Conversion</h3>
-            <div style="height:250px; width:100%;"><canvas id="pie"></canvas></div>
+            <div class="pie-container">
+                <canvas id="pie"></canvas>
+                <div class="pie-center-text">
+                    <div class="pie-percent" id="centerPct">0%</div>
+                    <div class="pie-label">Completed</div>
+                </div>
+            </div>
             <div style="margin-top: 20px;">
                 <div class="kpi-card" style="background:transparent">
-                    <div class="kpi-label">Remaining Gap</div>
+                    <div class="kpi-label">Pending Gap</div>
                     <div class="kpi-value" id="tDelta" style="color:#f87171">0</div>
                 </div>
             </div>
@@ -152,11 +173,41 @@
         <div class="card">
             <h3>🔍 Deep Dive Analysis</h3>
             <select id="centerSelect"><option value="">Detecting Centers...</option></select>
-            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="kpi-card"><div class="kpi-label">Achieved</div><div class="kpi-value" id="cAch" style="font-size:18px">-</div></div>
-                <div class="kpi-card"><div class="kpi-label">B2B Filled</div><div class="kpi-value" id="cB2B" style="color:var(--warning); font-size:18px">-</div></div>
+            
+            <div class="grid grid-2" style="gap:10px;">
+                <div class="kpi-card"><div class="kpi-label">Target</div><div class="kpi-value" id="cTarget">-</div></div>
+                <div class="kpi-card" style="border-color:var(--accent-primary)"><div class="kpi-label">Achieved</div><div class="kpi-value" id="cAch" style="color:var(--accent-primary)">-</div></div>
+                <div class="kpi-card"><div class="kpi-label">Gap (Delta)</div><div class="kpi-value" id="cDelta" style="color:#f87171">-</div></div>
+                <div class="kpi-card"><div class="kpi-label">Conversion %</div><div class="kpi-value" id="cPct" style="color:var(--success)">-</div></div>
             </div>
-            <div style="height:180px; width:100%; margin-top:20px"><canvas id="centerPie"></canvas></div>
+            
+            <div class="kpi-card" style="margin-top:10px; border-color:var(--warning); background:rgba(251, 146, 60, 0.1)">
+                <div class="kpi-label" style="color:var(--warning)">B2B Forms Filled</div>
+                <div class="kpi-value" id="cB2B" style="color:var(--warning); font-size:24px">-</div>
+            </div>
+            
+            <div style="height:150px; width:100%; margin-top:15px"><canvas id="centerPie"></canvas></div>
+        </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:20px">
+        <div class="card">
+            <h3>🏆 Top 5 Performing Centers</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Center</th><th>%</th><th>Target</th><th>Achieved</th></tr></thead>
+                    <tbody id="topBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <h3>⚠️ Zero Achievement (Action Required)</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Center</th><th>Target</th><th>B2B Forms</th></tr></thead>
+                    <tbody id="zeroBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -180,10 +231,17 @@ function updateDashboard(){
             if(rows.length < 2) return;
 
             const GT = rows[rows.length-1];
-            document.getElementById("tTarget").innerText = (+GT[1]||0).toLocaleString();
-            document.getElementById("tAch").innerText = (+GT[2]||0).toLocaleString();
-            document.getElementById("tPct").innerText = GT[3] || "0%";
-            document.getElementById("tDelta").innerText = ((+GT[1]||0) - (+GT[2]||0)).toLocaleString();
+            
+            // Global Values
+            const totalTarget = +GT[1]||0;
+            const totalAchieved = +GT[2]||0;
+            const totalPct = GT[3] || "0%";
+            
+            document.getElementById("tTarget").innerText = totalTarget.toLocaleString();
+            document.getElementById("tAch").innerText = totalAchieved.toLocaleString();
+            document.getElementById("tPct").innerText = totalPct;
+            document.getElementById("centerPct").innerText = totalPct; // For Pie Center
+            document.getElementById("tDelta").innerText = (totalTarget - totalAchieved).toLocaleString();
             document.getElementById("tB2B").innerText = (+GT[4]||0).toLocaleString();
             document.getElementById("syncTime").innerText = new Date().toLocaleTimeString();
 
@@ -203,13 +261,14 @@ function updateDashboard(){
                     achieved: a, 
                     remaining: Math.max(0, t - a),
                     pct: p, 
-                    b2b: b2b
+                    b2b: b2b,
+                    delta: Math.max(0, t - a)
                 });
             }
 
             const sortedData = [...centersData].sort((a,b) => b.pct - a.pct);
 
-            // 1. LINE CHART (B2B) - Set to not maintain aspect ratio for scroll
+            // 1. LINE CHART (B2B)
             if(lineChart){
                 lineChart.data.labels = centersData.map(d => d.name);
                 lineChart.data.datasets[0].data = centersData.map(d => d.b2b);
@@ -233,10 +292,7 @@ function updateDashboard(){
                     },
                     options: { 
                         maintainAspectRatio: false, 
-                        plugins: { 
-                            legend: { display: false },
-                            datalabels: { color: '#fff', align: 'top', font: {weight: 'bold'} }
-                        },
+                        plugins: { legend: { display: false }, datalabels: { color: '#fff', align: 'top', font: {weight: 'bold'} } },
                         scales: {
                             x: { ticks: { color: '#94a3b8', font: {size: 11} }, grid: { display: false } },
                             y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
@@ -246,7 +302,7 @@ function updateDashboard(){
                 });
             }
 
-            // 2. STACKED PROGRESS BARS
+            // 2. THICK STACKED BAR CHART
             if(barChart){
                 barChart.data.labels = sortedData.map(d => d.displayName);
                 barChart.data.datasets[0].data = sortedData.map(d => d.achieved);
@@ -258,21 +314,61 @@ function updateDashboard(){
                     data:{
                         labels: sortedData.map(d=>d.displayName),
                         datasets:[
-                            { label:'Achieved', data:sortedData.map(d=>d.achieved), backgroundColor:'#38bdf8', borderRadius:5 },
-                            { label:'Remaining', data:sortedData.map(d=>d.remaining), backgroundColor:'rgba(255,255,255,0.08)', borderRadius:5 }
+                            { label:'Achieved', data:sortedData.map(d=>d.achieved), backgroundColor:'#38bdf8', borderRadius:4, barPercentage: 0.8, categoryPercentage: 0.9 },
+                            { label:'Remaining', data:sortedData.map(d=>d.remaining), backgroundColor:'rgba(255,255,255,0.08)', borderRadius:4, barPercentage: 0.8, categoryPercentage: 0.9 }
                         ]
                     },
                     options:{
                         indexAxis:'y', maintainAspectRatio:false,
                         scales:{ 
                             x:{ stacked: true, display: false }, 
-                            y:{ stacked: true, ticks:{ color:'#f1f5f9', font:{size:12, weight: '600'} }, grid:{ display: false } } 
+                            y:{ 
+                                stacked: true, 
+                                ticks:{ color:'#f1f5f9', font:{size:12, weight:'600'}, crossAlign: 'far', padding: 5 }, 
+                                grid:{ display: false } 
+                            } 
                         },
                         plugins:{ 
                             legend: { display: false },
                             datalabels: { 
                                 color: '#fff', 
+                                font: { weight: 'bold' },
+                                // Show value only if > 0
                                 formatter: (val, ctx) => ctx.datasetIndex === 0 ? (val > 0 ? val.toLocaleString() : '') : '' 
+                            }
+                        },
+                        layout: { padding: { left: -10 } }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // 3. PIE CHART WITH VALUES
+            const pieData = [totalAchieved, Math.max(0, totalTarget - totalAchieved)];
+            if(pieChart){
+                pieChart.data.datasets[0].data = pieData;
+                pieChart.update('none');
+            } else {
+                pieChart = new Chart(document.getElementById("pie"), {
+                    type:'doughnut',
+                    data:{
+                        labels:['Achieved','Remaining'], 
+                        datasets:[{
+                            data: pieData, 
+                            backgroundColor:['#38bdf8','rgba(255,255,255,0.05)'], 
+                            borderWidth:0
+                        }]
+                    },
+                    options:{
+                        maintainAspectRatio:false, 
+                        cutout:'75%', 
+                        plugins:{
+                            legend:{ display: true, position: 'bottom', labels: { color: '#94a3b8', font:{size:11} } }, 
+                            datalabels:{
+                                display: true,
+                                color: '#fff',
+                                font: { weight: 'bold', size: 14 },
+                                formatter: (val) => val.toLocaleString() // Shows the exact number on the chart
                             }
                         }
                     },
@@ -280,34 +376,64 @@ function updateDashboard(){
                 });
             }
 
-            // 3. PIE CHART
-            if(pieChart){
-                pieChart.data.datasets[0].data = [(+GT[2]||0), Math.max(0, (+GT[1]||0)-(+GT[2]||0))];
-                pieChart.update('none');
-            } else {
-                pieChart = new Chart(document.getElementById("pie"), {
-                    type:'doughnut',
-                    data:{labels:['Achieved','Pending'], datasets:[{data:[1,1], backgroundColor:['#38bdf8','rgba(255,255,255,0.05)'], borderWidth:0}]},
-                    options:{maintainAspectRatio:false, cutout:'85%', plugins:{legend:{display:false}, datalabels:{display:false}}}
-                });
-            }
+            // 4. POPULATE TABLES
+            document.getElementById("topBody").innerHTML = sortedData.slice(0,5).map(c => `
+                <tr>
+                    <td>${c.displayName}</td>
+                    <td><span class="badge badge-success">${c.pct.toFixed(1)}%</span></td>
+                    <td>${c.target.toLocaleString()}</td>
+                    <td>${c.achieved.toLocaleString()}</td>
+                </tr>
+            `).join('');
 
-            // Dropdown Update
+            const zeroAch = centersData.filter(c => c.achieved === 0);
+            document.getElementById("zeroBody").innerHTML = zeroAch.length > 0 ? zeroAch.map(c => `
+                <tr>
+                    <td style="color:#f87171">${c.name}</td>
+                    <td>${c.target.toLocaleString()}</td>
+                    <td style="color:var(--warning)">${c.b2b.toLocaleString()}</td>
+                </tr>
+            `).join('') : "<tr><td colspan='3' style='text-align:center; color:#4ade80'>Awesome! No centers with 0 admission.</td></tr>";
+
+            // Dropdown Population (Only once)
             const select = document.getElementById("centerSelect");
             if(select.options.length <= 1){
                 [...centersData].sort((a,b)=>a.name.localeCompare(b.name)).forEach(c => {
                     let opt=document.createElement("option"); opt.value=c.name; opt.innerText=c.name; select.appendChild(opt);
                 });
             }
+            
+            const currentVal = select.value;
+            if(currentVal) {
+                const c = centersData.find(d => d.name === currentVal);
+                if(c) updateCenterCards(c);
+            }
         }
     });
 }
 
+function updateCenterCards(c) {
+    document.getElementById("cTarget").innerText = c.target.toLocaleString();
+    document.getElementById("cAch").innerText = c.achieved.toLocaleString();
+    document.getElementById("cPct").innerText = c.pct.toFixed(1) + "%";
+    document.getElementById("cDelta").innerText = c.delta.toLocaleString();
+    document.getElementById("cB2B").innerText = c.b2b.toLocaleString();
+
+    if(centerPieChart){
+        centerPieChart.data.datasets[0].data = [c.achieved, c.delta];
+        centerPieChart.update('none');
+    } else {
+        centerPieChart = new Chart(document.getElementById("centerPie"), {
+            type:'doughnut',
+            data: { datasets:[{data:[c.achieved, c.delta], backgroundColor:['#38bdf8','#1e293b'], borderWidth:0}]},
+            options: { maintainAspectRatio:false, cutout:'70%', plugins:{legend:{display:false}, datalabels:{display:false}}}
+        });
+    }
+}
+
 document.getElementById("centerSelect").addEventListener("change", function(){
     const c = centersData.find(d => d.name === this.value);
-    if(!c) return;
-    document.getElementById("cAch").innerText = c.achieved;
-    document.getElementById("cB2B").innerText = c.b2b;
+    if(c) updateCenterCards(c);
 });
 
 updateDashboard();
