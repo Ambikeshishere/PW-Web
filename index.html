@@ -122,7 +122,7 @@
 <body>
 
 <header>
-    <h1>PW Maharashtra Trend Analysis</h1>
+    <h1>PW Maharashtra Performance Engine</h1>
     <div style="font-size:14px; color:#94a3b8; margin-top:8px">
         <span class="live-dot"></span>SYSTEM STATUS: <span style="color:#4ade80">STREAMING LIVE DATA</span>
     </div>
@@ -226,7 +226,6 @@ function updateDashboard(){
 
     Papa.parse(liveURL, {
         download: true,
-        skipEmptyLines: true,
         complete: (res) => {
             const rows = res.data.filter(r => r.length > 3);
             if(rows.length < 2) return;
@@ -292,9 +291,7 @@ function updateDashboard(){
                         }]
                     },
                     options: { 
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: { duration: 0 },
+                        maintainAspectRatio: false, 
                         plugins: { legend: { display: false }, datalabels: { color: '#fff', align: 'top', font: {weight: 'bold'} } },
                         scales: {
                             x: { ticks: { color: '#94a3b8', font: {size: 11} }, grid: { display: false } },
@@ -322,10 +319,7 @@ function updateDashboard(){
                         ]
                     },
                     options:{
-                        indexAxis:'y', 
-                        responsive: true,
-                        maintainAspectRatio:false,
-                        animation: { duration: 0 },
+                        indexAxis:'y', maintainAspectRatio:false,
                         scales:{ 
                             x:{ stacked: true, display: false }, 
                             y:{ 
@@ -366,10 +360,8 @@ function updateDashboard(){
                         }]
                     },
                     options:{
-                        responsive: true,
                         maintainAspectRatio:false, 
-                        cutout:'75%',
-                        animation: { duration: 0 },
+                        cutout:'75%', 
                         plugins:{
                             legend:{ display: true, position: 'bottom', labels: { color: '#94a3b8', font:{size:11} } }, 
                             datalabels:{
@@ -434,13 +426,7 @@ function updateCenterCards(c) {
         centerPieChart = new Chart(document.getElementById("centerPie"), {
             type:'doughnut',
             data: { datasets:[{data:[c.achieved, c.delta], backgroundColor:['#38bdf8','#1e293b'], borderWidth:0}]},
-            options: { 
-                responsive: true,
-                maintainAspectRatio:false, 
-                cutout:'70%', 
-                animation: { duration: 0 },
-                plugins:{legend:{display:false}, datalabels:{display:false}}
-            }
+            options: { maintainAspectRatio:false, cutout:'70%', plugins:{legend:{display:false}, datalabels:{display:false}}}
         });
     }
 }
@@ -451,7 +437,7 @@ document.getElementById("centerSelect").addEventListener("change", function(){
 });
 
 updateDashboard();
-setInterval(updateDashboard, 5000);
+setInterval(updateDashboard, 500);
 </script>
 </body>
 </html>
