@@ -1,29 +1,137 @@
 # 🌐 PW-Web
 
-A modern, responsive static web template built with HTML, CSS & JS — perfect for launching a portfolio, landing page, or company website with ease. This project is hosted and demo-ready at:  
-🔗 https://ambikeshishere.github.io/PW-Web/ :contentReference[oaicite:0]{index=0}
+![HTML](https://img.shields.io/badge/HTML-5-orange)
+![CSS](https://img.shields.io/badge/CSS-3-blue)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)
+![Status](https://img.shields.io/badge/Status-Live-success)
+![Deploy](https://img.shields.io/badge/Deployed-GitHub%20Pages-brightgreen)
+
+> **PW-Web** is a clean, modern, and responsive static website built using **HTML, CSS, and JavaScript**.
+> Designed for speed, simplicity, and scalability — perfect for portfolios, landing pages, or educational projects.
+
+🔗 **Live Demo:** [https://ambikeshishere.github.io/PW-Web/](https://ambikeshishere.github.io/PW-Web/)
 
 ---
 
-## 🚀 Project Description
+## ✨ Preview
 
-**PW-Web** is a clean and minimal static website template designed for fast performance and easy customization. It provides a solid foundation for building professional web pages without heavy frameworks — ideal for developers, designers, and creators.
+![Website Preview](assets/preview.png)
 
-Key features include:
-
-✨ Lightweight & responsive design  
-🎨 Modern UI elements  
-📱 Mobile-friendly layout  
-💻 Simple HTML/CSS/JS structure (no backend)  
-📦 Ready to deploy on GitHub Pages or any static host
+> *(Tip: Add a screenshot named `preview.png` inside an `assets` folder for best visuals)*
 
 ---
 
-## 📌 Demo
+## 🎬 Demo GIF
 
-🖥️ **Live Preview:** https://ambikeshishere.github.io/PW-Web/ :contentReference[oaicite:1]{index=1}
+![Demo GIF](assets/demo.gif)
+
+> *(Optional but recommended: screen-record scrolling & interaction)*
 
 ---
 
-## 🗂️ Project Structure
+## 🚀 Features
 
+* ⚡ Fast & lightweight (no frameworks)
+* 📱 Fully responsive (mobile-first)
+* 🎨 Clean & modern UI
+* 🧩 Easy to customize
+* 🌍 Deployable anywhere (GitHub Pages / Netlify)
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology   | Usage            |
+| ------------ | ---------------- |
+| HTML5        | Structure        |
+| CSS3         | Styling & layout |
+| JavaScript   | Interactivity    |
+| GitHub Pages | Hosting          |
+
+---
+
+## 📂 Project Structure
+
+```
+PW-Web/
+├── index.html
+├── css/
+│   └── style.css
+├── js/
+│   └── script.js
+├── assets/
+│   ├── preview.png
+│   └── demo.gif
+├── .github/
+└── README.md
+```
+
+---
+
+## 🧑‍💻 Getting Started
+
+### 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/Ambikeshishere/PW-Web.git
+```
+
+### 2️⃣ Open Locally
+
+Just open `index.html` in your browser — no setup needed.
+
+---
+
+## 🎨 Customization Guide
+
+* **Text & Sections** → `index.html`
+* **Colors & Layout** → `css/style.css`
+* **Animations / Logic** → `js/script.js`
+
+---
+
+## 🤝 Contribution
+
+Contributions are welcome 🚀
+
+Steps:
+
+1. Fork the repo
+2. Create a new branch
+3. Make your changes
+4. Submit a Pull Request
+
+---
+
+## 📌 Future Enhancements
+
+* 🔐 Authentication UI
+* 🌙 Dark mode
+* ⚙️ Reusable components
+* 📊 Analytics integration
+
+---
+
+## 📄 License
+
+This project is **open-source**.
+You may add an **MIT License** if required.
+
+---
+
+## ⭐ Support
+
+If you like this project:
+
+* 🌟 Star the repo
+* 🍴 Fork it
+* 📢 Share it
+
+---
+
+### 👨‍💻 Author
+
+**Ambikesh**
+GitHub: [https://github.com/Ambikeshishere](https://github.com/Ambikeshishere)
+
+> *“Build clean. Ship fast.”*
