@@ -13,22 +13,6 @@
 
 ---
 
-## ✨ Preview
-
-![Website Preview](assets/preview.png)
-
-> *(Tip: Add a screenshot named `preview.png` inside an `assets` folder for best visuals)*
-
----
-
-## 🎬 Demo GIF
-
-![Demo GIF](assets/demo.gif)
-
-> *(Optional but recommended: screen-record scrolling & interaction)*
-
----
-
 ## 🚀 Features
 
 * ⚡ Fast & lightweight (no frameworks)
